@@ -1,0 +1,2372 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Afghani Hilmi Al-Ghifari — Programmer × Digital Marketing</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+            pixel: ['DotGothic16', 'monospace'],
+            serif: ['Instrument Serif', 'serif'],
+          },
+          colors: {
+            ref: {
+              bg: '#0b0c16',
+              card: '#121526',
+              hover: '#16192e',
+              border: '#2a2e4a',
+              pink: '#ff5f87',
+              hotpink: '#ff69b4',
+              green: '#50fa7b',
+              cyan: '#8be9fd',
+              muted: '#a0a5c0'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    :root {
+      --bg-primary: #0b0c16;
+      --bg-secondary: #121526;
+      --bg-card-hover: #16192e;
+      --accent-pink: #ff69b4;
+      --accent-pink-subtle: #ff5f87;
+      --accent-green: #50fa7b;
+      --accent-cyan: #8be9fd;
+      --text-primary: #ffffff;
+      --text-secondary: #a0a5c0;
+      --border-color: #2a2e4a;
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: 'Inter', sans-serif;
+      overflow-x: hidden;
+      scroll-behavior: smooth;
+    }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #0b0c16; }
+    ::-webkit-scrollbar-thumb { background: #2a2e4a; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #ff5f87; }
+
+    .bg-grid-pattern {
+      background-color: #0b0c16;
+      background-image:
+        linear-gradient(to right, rgba(42, 46, 74, 0.22) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(42, 46, 74, 0.22) 1px, transparent 1px);
+      background-size: 32px 32px;
+    }
+    .scanline-overlay {
+      background: linear-gradient(
+        to bottom,
+        rgba(255,255,255,0),
+        rgba(255,255,255,0) 50%,
+        rgba(0, 0, 0, 0.22) 50%,
+        rgba(0, 0, 0, 0.22)
+      );
+      background-size: 100% 4px;
+    }
+    .terminal-card {
+      background: rgba(18, 21, 38, 0.92);
+      backdrop-filter: blur(14px);
+      border: 1px solid #2a2e4a;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65);
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s ease, box-shadow 0.25s ease;
+    }
+    .terminal-card:hover {
+      border-color: rgba(255, 95, 135, 0.45);
+    }
+    .pink-glow {
+      box-shadow: 0 0 28px -4px rgba(255, 95, 135, 0.5);
+    }
+    .experience-card {
+      border-left: 2px solid #ff5f87;
+      transition: transform 0.22s ease, background-color 0.22s ease;
+    }
+    .experience-card:hover {
+      transform: translateX(4px);
+    }
+    .awwwards-ribbon {
+      writing-mode: vertical-rl;
+      text-orientation: mixed;
+    }
+    @keyframes floatSlow {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-6px); }
+    }
+    .animate-float {
+      animation: floatSlow 3.2s ease-in-out infinite;
+    }
+    @keyframes eqBar {
+      0%, 100% { height: 4px; }
+      50% { height: 18px; }
+    }
+    .eq-bar {
+      width: 3px;
+      background: #50fa7b;
+      border-radius: 2px;
+      display: inline-block;
+    }
+    .eq-playing .eq-bar:nth-child(1) { animation: eqBar 0.55s ease-in-out infinite 0.0s; }
+    .eq-playing .eq-bar:nth-child(2) { animation: eqBar 0.45s ease-in-out infinite 0.15s; }
+    .eq-playing .eq-bar:nth-child(3) { animation: eqBar 0.65s ease-in-out infinite 0.25s; }
+    .eq-playing .eq-bar:nth-child(4) { animation: eqBar 0.50s ease-in-out infinite 0.10s; }
+
+    #room-canvas-container canvas {
+      display: block;
+      width: 100% !important;
+      height: 100% !important;
+    }
+  </style>
+</head>
+<body class="bg-ref-bg text-white antialiased selection:bg-[#ff5f87]/30 selection:text-[#ff69b4] min-h-screen flex flex-col">
+
+  <!-- ===================================================================== -->
+  <!-- Fixed Right-Edge Awwwards Nominee Ribbon                              -->
+  <!-- ===================================================================== -->
+  <a href="#sec-contact" id="awwwards-edge-badge" class="fixed right-0 top-1/2 -translate-y-1/2 z-40 bg-[#121526]/95 hover:bg-[#ff5f87] text-white hover:text-[#0b0c16] border-l border-t border-b border-[#2a2e4a] px-2 py-3.5 rounded-l-lg font-mono text-[11px] tracking-widest uppercase transition-all flex items-center gap-2 shadow-xl">
+    <span class="font-bold text-xs">W.</span>
+    <span class="awwwards-ribbon">Nominee · Afghani's Desk</span>
+  </a>
+
+  <!-- ===================================================================== -->
+  <!-- 1. INITIAL BOOT / ML TRAINING SCREEN ($ python train.py --model ...)  -->
+  <!-- ===================================================================== -->
+  <div id="boot-screen" class="fixed inset-0 z-50 bg-grid-pattern flex flex-col justify-center items-center p-4 sm:p-8 font-mono transition-opacity duration-500">
+    <div class="absolute inset-0 scanline-overlay pointer-events-none opacity-40"></div>
+
+    <div class="relative z-10 max-w-lg w-full terminal-card rounded-2xl overflow-hidden border border-[#2a2e4a] p-6 sm:p-7 space-y-5">
+      <div class="flex items-center justify-between border-b border-[#2a2e4a] pb-3.5">
+        <div class="flex items-center gap-2">
+          <span class="w-3 h-3 rounded-full bg-[#ff5f87]"></span>
+          <span class="w-3 h-3 rounded-full bg-[#f1fa8c]"></span>
+          <span class="w-3 h-3 rounded-full bg-[#50fa7b]"></span>
+          <span class="text-xs text-[#a0a5c0] ml-2">afghani@cilegon: ~/room</span>
+        </div>
+        <span id="boot-clock" class="text-[11px] text-[#a0a5c0]">Tue 27 Oct · WIB</span>
+      </div>
+
+      <div class="text-xs sm:text-sm text-[#a9b1d6] bg-[#0b0c16] px-3.5 py-2.5 rounded-lg border border-[#2a2e4a]">
+        <span class="text-[#50fa7b]">$</span> python train.py --model <span class="text-[#ff69b4] font-semibold">afghani-1</span> --data <span class="text-[#8be9fd]">./room</span>
+      </div>
+
+      <div class="bg-[#0b0c16]/90 border border-[#2a2e4a] rounded-xl p-4 space-y-3">
+        <div class="flex items-baseline justify-between">
+          <div>
+            <span class="text-[11px] uppercase tracking-wider text-[#a0a5c0] block">loss</span>
+            <div id="boot-loss" class="text-2xl sm:text-3xl font-bold text-[#ff69b4] tracking-tight">2.590</div>
+          </div>
+          <div class="text-right">
+            <span class="text-[11px] uppercase tracking-wider text-[#50fa7b] block">BUILD · MARKET · OPTIMIZE · GROW</span>
+            <div id="boot-metrics" class="text-xs text-[#a0a5c0] mt-0.5">step 0/6000 · 0.0k tok/s · gpu 0%</div>
+          </div>
+        </div>
+
+        <div class="h-14 w-full bg-[#121526] rounded-lg border border-[#2a2e4a]/70 p-1.5 flex items-end overflow-hidden">
+          <svg id="loss-svg" viewBox="0 0 240 48" class="w-full h-full overflow-visible">
+            <defs>
+              <linearGradient id="pinkGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#ff69b4" stop-opacity="0.45"/>
+                <stop offset="100%" stop-color="#ff69b4" stop-opacity="0.0"/>
+              </linearGradient>
+            </defs>
+            <path id="loss-area" d="M0,6 L240,44 L240,48 L0,48 Z" fill="url(#pinkGrad)" />
+            <path id="loss-path" d="M0,6 Q60,18 120,32 T240,44" fill="none" stroke="#ff5f87" stroke-width="2.2" stroke-linecap="round" />
+          </svg>
+        </div>
+
+        <div class="space-y-1.5 pt-1">
+          <div class="flex justify-between text-xs">
+            <span class="text-[#a0a5c0]">Booting Afghani's Desk (Cilegon, Banten)</span>
+            <span id="boot-pct" class="text-[#50fa7b] font-semibold">0%</span>
+          </div>
+          <div class="w-full h-1.5 bg-[#16192e] rounded-full overflow-hidden">
+            <div id="boot-bar" class="h-full bg-gradient-to-r from-[#ff5f87] via-[#ff69b4] to-[#8be9fd] transition-all duration-100" style="width: 0%"></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="boot-actions" class="space-y-3 pt-1 transition-opacity duration-300">
+        <div class="grid grid-cols-2 gap-3">
+          <button id="btn-enter-sound" class="px-4 py-2.5 rounded-full bg-[#ff5f87] hover:bg-[#ff69b4] text-[#0b0c16] font-semibold text-xs sm:text-sm transition pink-glow flex items-center justify-center gap-2">
+            <span>Enter with sound</span>
+          </button>
+          <button id="btn-enter-mute" class="px-4 py-2.5 rounded-full bg-[#16192e] hover:bg-[#ff5f87]/20 text-white hover:text-[#ff69b4] border border-[#ff5f87]/50 font-medium text-xs sm:text-sm transition">
+            Enter without
+          </button>
+        </div>
+        <div class="text-center pt-1">
+          <button id="btn-enter-flat" class="text-xs text-[#a0a5c0] hover:text-white underline underline-offset-4 transition">
+            Flat version (lihat seluruh data portofolio langsung)
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- TOP FIXED NAVIGATION BAR                                              -->
+  <!-- ===================================================================== -->
+  <header class="sticky top-0 z-30 bg-[#0b0c16]/90 backdrop-blur-md border-b border-[#2a2e4a] px-4 sm:px-8 py-3">
+    <div class="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-3 font-mono text-xs">
+      <div class="flex items-center gap-3">
+        <button id="btn-toggle-mode" class="px-3.5 py-1.5 rounded-full bg-[#121526] hover:bg-[#16192e] border border-[#2a2e4a] hover:border-[#ff5f87] text-white flex items-center gap-2 transition">
+          <span id="mode-toggle-label" class="text-[#ff69b4]">Flat version</span>
+        </button>
+        <span class="hidden md:inline-block text-[#a0a5c0]">AfghaniHilmiAlGhifari · Programmer × Digital Marketing</span>
+      </div>
+
+      <nav class="flex items-center gap-1 sm:gap-2 overflow-x-auto">
+        <button data-nav="projects" class="nav-tab px-3 py-1.5 rounded-full transition bg-[#ff5f87]/15 text-white border border-[#ff5f87]/50">
+          <span class="text-[#ff5f87] font-bold mr-1">01</span>Projects
+        </button>
+        <button data-nav="experience" class="nav-tab px-3 py-1.5 rounded-full transition text-[#a0a5c0] hover:text-white border border-transparent">
+          <span class="text-[#ff5f87] font-bold mr-1">02</span>Experience
+        </button>
+        <button data-nav="about" class="nav-tab px-3 py-1.5 rounded-full transition text-[#a0a5c0] hover:text-white border border-transparent">
+          <span class="text-[#ff5f87] font-bold mr-1">03</span>About
+        </button>
+        <button data-nav="contact" class="nav-tab px-3 py-1.5 rounded-full transition text-[#a0a5c0] hover:text-white border border-transparent">
+          <span class="text-[#ff5f87] font-bold mr-1">04</span>Contact
+        </button>
+      </nav>
+
+      <div class="flex items-center gap-2.5">
+        <button id="btn-sound-toggle" class="px-3 py-1 rounded-full bg-[#121526] hover:bg-[#16192e] border border-[#2a2e4a] text-[#a0a5c0] hover:text-white transition">
+          🔇 Mute
+        </button>
+        <span id="live-clock" class="hidden sm:inline-block text-[#a0a5c0] bg-[#121526] px-3 py-1 rounded-full border border-[#2a2e4a]">
+          Tue 27 Oct · Cilegon
+        </span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===================================================================== -->
+  <!-- VIEW 1: 3D WEBGL ROOM WITH ANIMATED CHARACTERS (AFGHANI, KAI & DRONE) -->
+  <!-- ===================================================================== -->
+  <section id="room-view" class="relative flex-1 min-h-[calc(100vh-55px)] w-full overflow-hidden">
+    <div id="room-canvas-container" class="absolute inset-0 w-full h-full cursor-grab active:cursor-grabbing"></div>
+
+    <!-- Floating 3D Character Speech Bubble Toast -->
+    <div id="char-speech-bubble" class="fixed top-20 left-1/2 -translate-x-1/2 z-30 pointer-events-none opacity-0 transition-all duration-300 transform -translate-y-2">
+      <div class="bg-[#121526]/95 border border-[#ff5f87] rounded-full px-5 py-2.5 shadow-2xl pink-glow flex items-center gap-2.5 font-mono text-xs text-white">
+        <span id="char-speech-emoji" class="text-base">👋</span>
+        <span id="char-speech-text">Halo! Saya Afghani Hilmi Al-Ghifari — Programmer × Digital Marketing!</span>
+      </div>
+    </div>
+
+    <!-- 3D Room HUD Overlays -->
+    <div class="relative z-10 pointer-events-none p-4 sm:p-8 flex flex-col justify-between min-h-[calc(100vh-55px)]">
+      <div class="flex flex-wrap items-start justify-between gap-4">
+        <!-- Top-Left Identity Card (Full Real Data from afghani-hilmi.ptajitt15.chatgpt.site) -->
+        <div class="terminal-card rounded-2xl p-5 max-w-sm pointer-events-auto space-y-2.5">
+          <div class="flex items-center justify-between font-mono text-[11px] text-[#a0a5c0]">
+            <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-[#50fa7b] animate-ping"></span> Drag to look around</span>
+            <span class="text-[#ff69b4]">Open to Work</span>
+          </div>
+          <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-white">
+            Afghani Hilmi Al-Ghifari
+          </h1>
+          <p class="text-sm sm:text-base text-white/95 font-medium">
+            I build digital solutions &amp; help businesses grow.
+          </p>
+          <p class="font-mono text-xs text-[#ff69b4]">
+            Programmer × Digital Marketing · Cilegon, Banten
+          </p>
+          <div class="flex flex-wrap gap-1.5 font-mono text-[10px] text-[#50fa7b]">
+            <span class="px-2 py-0.5 rounded-full bg-[#50fa7b]/10 border border-[#50fa7b]/30">BUILD</span>
+            <span class="px-2 py-0.5 rounded-full bg-[#50fa7b]/10 border border-[#50fa7b]/30">MARKET</span>
+            <span class="px-2 py-0.5 rounded-full bg-[#50fa7b]/10 border border-[#50fa7b]/30">OPTIMIZE</span>
+            <span class="px-2 py-0.5 rounded-full bg-[#50fa7b]/10 border border-[#50fa7b]/30">GROW</span>
+          </div>
+
+          <!-- Character Interaction Controls -->
+          <div class="pt-2 border-t border-[#2a2e4a]/80 space-y-2">
+            <div class="font-mono text-[10px] uppercase tracking-wider text-[#a0a5c0]">Interactive 3D Characters</div>
+            <div class="flex flex-wrap gap-1.5 font-mono text-[11px]">
+              <button id="btn-char-wave" class="px-2.5 py-1.5 rounded-full bg-[#ff5f87]/20 hover:bg-[#ff5f87] text-[#ff69b4] hover:text-[#0b0c16] border border-[#ff5f87]/50 transition">
+                👋 Wave / Turbo Code
+              </button>
+              <button id="btn-char-kai" class="px-2.5 py-1.5 rounded-full bg-[#16192e] hover:bg-[#50fa7b] text-[#50fa7b] hover:text-[#0b0c16] border border-[#50fa7b]/40 transition">
+                🐾 Pet Kai the Cat
+              </button>
+              <button id="btn-char-drone" class="px-2.5 py-1.5 rounded-full bg-[#16192e] hover:bg-[#8be9fd] text-[#8be9fd] hover:text-[#0b0c16] border border-[#8be9fd]/40 transition">
+                🤖 AI Bot Scan
+              </button>
+            </div>
+          </div>
+
+          <div class="pt-1 flex flex-wrap gap-2 font-mono text-xs">
+            <button id="btn-room-to-flat" class="px-3.5 py-1.5 rounded-full bg-[#ff5f87] hover:bg-[#ff69b4] text-[#0b0c16] font-semibold transition">
+              Flat version ↗
+            </button>
+            <button id="btn-room-inspect-projects" class="px-3.5 py-1.5 rounded-full bg-[#16192e] hover:bg-[#2a2e4a] text-white border border-[#2a2e4a] transition">
+              Inspect Monitor (Projects)
+            </button>
+          </div>
+        </div>
+
+        <!-- Station & Character Inspector HUD -->
+        <div id="room-station-hud" class="terminal-card rounded-2xl p-5 max-w-md w-full pointer-events-auto space-y-3 border border-[#ff5f87]/40 animate-float">
+          <div class="flex items-center justify-between font-mono text-xs">
+            <span id="hud-tag" class="text-[#ff69b4] font-semibold uppercase">00 // AFGHANI'S DESK</span>
+            <button id="hud-open-flat-sec" data-target-sec="projects" class="text-[11px] text-[#8be9fd] hover:underline">Buka di Flat Version ↗</button>
+          </div>
+          <h3 id="hud-title" class="text-lg font-bold text-white">Programmer × Digital Marketing</h3>
+          <p id="hud-body" class="text-xs sm:text-sm text-[#a0a5c0] leading-relaxed">
+            Lulusan S1 Sistem Informasi Universitas Amikom Yogyakarta (IPK 3.63). Berpengalaman di pengembangan web, IT support, operasional laboratorium komputer, dan Digital Marketing di PT Aufa Jaya Indonesia.
+          </p>
+          <div id="hud-quick-actions" class="flex flex-wrap gap-1.5 pt-1 font-mono text-[11px]">
+            <button data-station="0" class="station-btn px-2.5 py-1 rounded-full bg-[#ff5f87]/20 text-[#ff69b4] border border-[#ff5f87]/40 transition">00 Overview</button>
+            <button data-station="1" class="station-btn px-2.5 py-1 rounded-full bg-[#16192e] hover:bg-[#ff5f87]/20 text-white border border-[#2a2e4a] transition">01 Monitor (Projects)</button>
+            <button data-station="2" class="station-btn px-2.5 py-1 rounded-full bg-[#16192e] hover:bg-[#ff5f87]/20 text-white border border-[#2a2e4a] transition">02 Shelf (Experience)</button>
+            <button data-station="3" class="station-btn px-2.5 py-1 rounded-full bg-[#16192e] hover:bg-[#ff5f87]/20 text-white border border-[#2a2e4a] transition">03 Kai &amp; Bean Bag (About)</button>
+            <button data-station="4" class="station-btn px-2.5 py-1 rounded-full bg-[#16192e] hover:bg-[#ff5f87]/20 text-white border border-[#2a2e4a] transition">04 Phone &amp; Vinyl (Contact)</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom Row: ‹ 01 / 05 › Carousel Controls + Station Pills -->
+      <div class="flex flex-wrap items-center justify-between gap-4 mt-auto pt-6 font-mono text-xs">
+        <div class="terminal-card rounded-full px-4 py-2 pointer-events-auto flex items-center gap-4">
+          <button id="cam-prev" class="w-7 h-7 rounded-full bg-[#16192e] hover:bg-[#ff5f87] hover:text-[#0b0c16] text-white flex items-center justify-center transition">‹</button>
+          <span id="cam-indicator" class="text-white font-semibold tracking-wider">01 / 05</span>
+          <button id="cam-next" class="w-7 h-7 rounded-full bg-[#16192e] hover:bg-[#ff5f87] hover:text-[#0b0c16] text-white flex items-center justify-center transition">›</button>
+          <span id="cam-desc" class="text-[#a0a5c0] hidden sm:inline">Afghani's Desk · Cilegon, Banten</span>
+        </div>
+
+        <div class="terminal-card rounded-full px-3 py-1.5 pointer-events-auto flex flex-wrap items-center gap-1.5">
+          <button data-station="0" class="station-pill px-3 py-1 rounded-full bg-[#ff5f87] text-[#0b0c16] font-semibold transition">Room</button>
+          <button data-station="1" class="station-pill px-3 py-1 rounded-full text-[#a0a5c0] hover:text-white transition">01 Projects</button>
+          <button data-station="2" class="station-pill px-3 py-1 rounded-full text-[#a0a5c0] hover:text-white transition">02 Experience</button>
+          <button data-station="3" class="station-pill px-3 py-1 rounded-full text-[#a0a5c0] hover:text-white transition">03 About</button>
+          <button data-station="4" class="station-pill px-3 py-1 rounded-full text-[#a0a5c0] hover:text-white transition">04 Contact</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================================================================== -->
+  <!-- VIEW 2: FLAT VERSION (100% DATA FROM AFGHANI-HILMI.PTAJITT15.CHATGPT.SITE) -->
+  <!-- ===================================================================== -->
+  <main id="flat-view" class="hidden flex-1 max-w-6xl w-full mx-auto px-4 sm:px-8 py-10 space-y-16">
+
+    <!-- HERO & TERMINAL BANNER -->
+    <section class="terminal-card rounded-2xl p-6 sm:p-8 relative overflow-hidden">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+        <div class="lg:col-span-7 space-y-3.5">
+          <div class="flex flex-wrap items-center gap-2 font-mono text-[11px]">
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#50fa7b]/15 border border-[#50fa7b]/40 text-[#50fa7b]">
+              <span class="w-2 h-2 rounded-full bg-[#50fa7b] animate-ping"></span>
+              Terbuka untuk peluang kerja &amp; proyek
+            </span>
+            <span class="px-2.5 py-1 rounded-full bg-[#ff5f87]/15 border border-[#ff5f87]/30 text-[#ff69b4]">Freelance · Open to work</span>
+            <span class="px-2.5 py-1 rounded-full bg-[#16192e] border border-[#2a2e4a] text-[#a0a5c0]">Cilegon, Banten, Indonesia</span>
+          </div>
+
+          <h1 class="text-3xl sm:text-5xl font-bold tracking-tight text-white">
+            Afghani Hilmi Al-Ghifari
+          </h1>
+          <div class="font-mono text-xs sm:text-sm text-[#8be9fd] font-semibold">
+            Programmer × Digital Marketing · BANGUN. PASARKAN. OPTIMALKAN. BERKEMBANG.
+          </div>
+          <p class="text-base sm:text-lg text-white/90 font-serif italic">
+            "Saya membangun solusi digital &amp; membantu bisnis berkembang." ("I build digital solutions &amp; help businesses grow.")
+          </p>
+          <p class="text-xs sm:text-sm text-[#a0a5c0] leading-relaxed">
+            Lulusan Sistem Informasi dari <span class="text-white font-medium">Universitas Amikom Yogyakarta</span> (IPK 3.63). Pengalaman mencakup pengembangan web, IT support, operasional laboratorium komputer, dan digital marketing di <span class="text-white font-medium">PT Aufa Jaya Indonesia</span>.
+          </p>
+
+          <div class="pt-2 flex flex-wrap items-center gap-2.5 font-mono text-xs">
+            <button id="hero-open-3d" class="px-4 py-2 rounded-full bg-[#ff5f87] hover:bg-[#ff69b4] text-[#0b0c16] font-semibold transition pink-glow">
+              ◀ Back to the 3D room
+            </button>
+            <button id="hero-open-cv" class="px-4 py-2 rounded-full bg-[#16192e] hover:bg-[#2a2e4a] text-white border border-[#2a2e4a] transition">
+              cv.pdf · Download Resume
+            </button>
+            <button id="hero-ask-ai" class="px-4 py-2 rounded-full bg-[#16192e] hover:bg-[#2a2e4a] text-[#50fa7b] border border-[#50fa7b]/30 transition">
+              Chat with Afghani's AI
+            </button>
+          </div>
+        </div>
+
+        <!-- Terminal `~afghani@desk ~ $ fetch` -->
+        <div class="lg:col-span-5 bg-[#0b0c16] border border-[#2a2e4a] rounded-xl overflow-hidden font-mono text-xs">
+          <div class="bg-[#16192e] px-4 py-2 border-b border-[#2a2e4a] flex items-center justify-between">
+            <span class="text-[#a0a5c0]">terminal · ~afghani@desk</span>
+            <span class="text-[#a0a5c0]">− □ ×</span>
+          </div>
+          <div id="mini-terminal-body" class="p-4 space-y-2 text-[#a0a5c0] max-h-52 overflow-y-auto">
+            <div><span class="text-[#50fa7b]">afghani@desk</span> <span class="text-[#8be9fd]">~</span> $ fetch</div>
+            <div class="grid grid-cols-[78px_1fr] gap-y-1 pl-2 border-l-2 border-[#ff5f87]">
+              <span class="text-[#ff69b4] font-semibold col-span-2">afghani@desk</span>
+              <span>role</span><span class="text-white">Programmer × Digital Marketing</span>
+              <span>based</span><span class="text-white">Cilegon, Banten, Indonesia</span>
+              <span>edu</span><span class="text-white">S1 Sistem Informasi · Amikom (3.63)</span>
+              <span>builds</span><span class="text-[#50fa7b]">Web Apps, WordPress, SEO, Ads</span>
+              <span>projects</span><span class="text-[#ff69b4]">6, click one below</span>
+            </div>
+          </div>
+          <form id="mini-terminal-form" class="border-t border-[#2a2e4a] bg-[#121526] px-3.5 py-2 flex items-center gap-2">
+            <span class="text-[#50fa7b]">afghani@desk ~ $</span>
+            <input id="mini-terminal-input" type="text" placeholder="type: help, ls, open ghifar, skills, pet kai" class="bg-transparent text-white focus:outline-none flex-1 placeholder:text-[#a0a5c0]/40" autocomplete="off" />
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- 01 PROJECTS SECTION (ALL 6 REAL PROJECTS FROM AFGHANI'S WEBSITE)    -->
+    <!-- =================================================================== -->
+    <section id="sec-projects" class="space-y-6 scroll-mt-20">
+      <div class="flex flex-wrap items-center justify-between gap-4 border-b border-[#2a2e4a] pb-4">
+        <div class="flex items-baseline gap-3">
+          <span class="font-mono text-sm text-[#ff5f87] font-bold">01</span>
+          <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-white">Projects (06 Proyek Pilihan)</h2>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-1.5 font-mono text-xs" id="project-filter-bar">
+          <button data-proj="all" class="proj-filter-btn px-3 py-1.5 rounded-full bg-[#ff5f87] text-[#0b0c16] font-semibold transition">0 all</button>
+          <button data-proj="edi" class="proj-filter-btn px-3 py-1.5 rounded-full bg-[#121526] hover:bg-[#16192e] text-[#a0a5c0] hover:text-white border border-[#2a2e4a] transition">1 ghifar-food</button>
+          <button data-proj="resumewesume" class="proj-filter-btn px-3 py-1.5 rounded-full bg-[#121526] hover:bg-[#16192e] text-[#a0a5c0] hover:text-white border border-[#2a2e4a] transition">2 relasi-crm</button>
+          <button data-proj="bandsy" class="proj-filter-btn px-3 py-1.5 rounded-full bg-[#121526] hover:bg-[#16192e] text-[#a0a5c0] hover:text-white border border-[#2a2e4a] transition">3 financetrack</button>
+          <button data-proj="mentora" class="proj-filter-btn px-3 py-1.5 rounded-full bg-[#121526] hover:bg-[#16192e] text-[#a0a5c0] hover:text-white border border-[#2a2e4a] transition">4 outfitmatch-ai</button>
+          <button data-proj="naqsha" class="proj-filter-btn px-3 py-1.5 rounded-full bg-[#121526] hover:bg-[#16192e] text-[#a0a5c0] hover:text-white border border-[#2a2e4a] transition">5 kampung-kita</button>
+          <button data-proj="fotocopy" class="proj-filter-btn px-3 py-1.5 rounded-full bg-[#121526] hover:bg-[#16192e] text-[#a0a5c0] hover:text-white border border-[#2a2e4a] transition">6 fotocopy-web</button>
+        </div>
+      </div>
+
+      <!-- 6 Bento Project Selector Cards -->
+      <div id="project-cards-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5"></div>
+
+      <!-- Full OS Window Stack (`glow README.md`) -->
+      <div id="project-inspector" class="space-y-6"></div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- 02 EXPERIENCE, EDUCATION & CERTIFICATIONS SECTION                   -->
+    <!-- =================================================================== -->
+    <section id="sec-experience" class="space-y-8 scroll-mt-20">
+      <div class="flex flex-wrap items-center justify-between gap-4 border-b border-[#2a2e4a] pb-4">
+        <div class="flex items-baseline gap-3">
+          <span class="font-mono text-sm text-[#ff5f87] font-bold">02</span>
+          <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-white">Experience, Education &amp; Certifications</h2>
+        </div>
+        <button id="btn-exp-cv" class="px-4 py-2 rounded-full bg-[#ff5f87] hover:bg-[#ff69b4] text-[#0b0c16] font-mono font-semibold text-xs transition pink-glow">
+          Download CV
+        </button>
+      </div>
+
+      <!-- 6 Work Experiences Timeline -->
+      <div id="experience-grid" class="space-y-4"></div>
+
+      <!-- Education + 6 Certifications Grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 pt-4">
+        <!-- Education Card -->
+        <div class="lg:col-span-5 terminal-card rounded-2xl p-6 space-y-4 border-l-2 border-l-[#8be9fd]">
+          <div class="font-mono text-xs uppercase tracking-wider text-[#8be9fd]">Pendidikan (Education)</div>
+          <div>
+            <h3 class="text-xl font-bold text-white">Sarjana Sistem Informasi (S.Kom)</h3>
+            <div class="text-sm text-[#ff69b4] font-medium mt-0.5">Universitas Amikom Yogyakarta</div>
+            <div class="font-mono text-xs text-[#a0a5c0] mt-1">2016 – 2021 · IPK / GPA: <span class="text-[#50fa7b] font-bold">3.63</span></div>
+          </div>
+          <div class="p-3.5 rounded-xl bg-[#0b0c16] border border-[#2a2e4a] text-xs text-[#a0a5c0] leading-relaxed">
+            <span class="font-mono text-[#ff69b4] block mb-1">Skripsi / Thesis:</span>
+            "Membuat Toko Online Berbasis Android di Mitracom Cilegon" (Creating an Android-Based Online Store at Mitracom Cilegon)
+          </div>
+        </div>
+
+        <!-- 6 Certifications Card -->
+        <div class="lg:col-span-7 terminal-card rounded-2xl p-6 space-y-4">
+          <div class="font-mono text-xs uppercase tracking-wider text-[#50fa7b]">Sertifikasi &amp; Pelatihan (06 Certifications)</div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+            <div class="p-3 rounded-xl bg-[#0b0c16] border border-[#2a2e4a]">
+              <div class="font-bold text-white">Technical Support Fundamentals</div>
+              <div class="text-[#8be9fd] font-mono mt-0.5">Google / Coursera · 30 May 2023</div>
+            </div>
+            <div class="p-3 rounded-xl bg-[#0b0c16] border border-[#2a2e4a]">
+              <div class="font-bold text-white">Introduction to Technical Support</div>
+              <div class="text-[#8be9fd] font-mono mt-0.5">IBM / Coursera · 5 June 2023</div>
+            </div>
+            <div class="p-3 rounded-xl bg-[#0b0c16] border border-[#2a2e4a]">
+              <div class="font-bold text-white">New Digital Marketing &amp; Internet Marketing Strategi</div>
+              <div class="text-[#ff69b4] font-mono mt-0.5">Sekolah Pintar · 15 March 2021</div>
+            </div>
+            <div class="p-3 rounded-xl bg-[#0b0c16] border border-[#2a2e4a]">
+              <div class="font-bold text-white">Membuat Web E-Commerce</div>
+              <div class="text-[#ff69b4] font-mono mt-0.5">Sekolah Pintar · 18 March 2021</div>
+            </div>
+            <div class="p-3 rounded-xl bg-[#0b0c16] border border-[#2a2e4a]">
+              <div class="font-bold text-white">Petugas K3 Umum</div>
+              <div class="text-[#50fa7b] font-mono mt-0.5">BNSP / KEMNAKER · 10 July 2023</div>
+            </div>
+            <div class="p-3 rounded-xl bg-[#0b0c16] border border-[#2a2e4a]">
+              <div class="font-bold text-white">Student Staff — IT Support</div>
+              <div class="text-[#50fa7b] font-mono mt-0.5">Univ. Amikom Yogyakarta · Jan–Apr 2020</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- 03 ABOUT, SKILLS & SERVICES SECTION                                 -->
+    <!-- =================================================================== -->
+    <section id="sec-about" class="space-y-8 scroll-mt-20">
+      <div class="flex flex-wrap items-center justify-between gap-4 border-b border-[#2a2e4a] pb-4">
+        <div class="flex items-baseline gap-3">
+          <span class="font-mono text-sm text-[#ff5f87] font-bold">03</span>
+          <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-white">About, Skills &amp; Services</h2>
+        </div>
+
+        <div class="inline-flex rounded-full bg-[#121526] border border-[#2a2e4a] p-1 font-mono text-xs">
+          <button id="pill-about-chat" class="px-4 py-1 rounded-full bg-[#ff5f87] text-[#0b0c16] font-semibold transition">Chat</button>
+          <button id="pill-about-bio" class="px-4 py-1 rounded-full text-[#a0a5c0] hover:text-white transition">About</button>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        <!-- Interactive AI Chatbot ("Afghani's AI") -->
+        <div id="about-chat-panel" class="lg:col-span-6 terminal-card rounded-2xl overflow-hidden flex flex-col">
+          <div class="bg-[#16192e] px-4 py-3 border-b border-[#2a2e4a] flex items-center justify-between font-mono text-xs">
+            <div class="flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-[#50fa7b] animate-pulse"></span>
+              <span class="text-white font-semibold">Afghani's AI</span>
+            </div>
+            <span class="text-[#a0a5c0]">sleepless assistant</span>
+          </div>
+
+          <div id="ai-chat-messages" class="p-5 space-y-3 flex-1 max-h-80 overflow-y-auto text-sm">
+            <div class="bg-[#16192e] border border-[#2a2e4a] rounded-xl p-3.5 text-white/90 leading-relaxed">
+              Halo! Saya <span class="text-[#ff69b4] font-semibold">Afghani's AI</span>, asisten virtual yang siap menjawab apa saja tentang <span class="text-white font-medium">Afghani Hilmi Al-Ghifari</span> (proyek Ghifar Food, Relasi CRM, pengalaman di PT Aufa Jaya Indonesia, kuliah di Amikom Yogyakarta, skill SEO/Google Ads, atau kontak WhatsApp).
+            </div>
+          </div>
+
+          <div class="px-4 py-2 border-t border-[#2a2e4a]/70 bg-[#0b0c16]/60 flex flex-wrap gap-1.5">
+            <button data-ask="Apa saja 6 proyek yang dibuat Afghani?" class="ai-chip text-[11px] font-mono px-2.5 py-1 rounded-full bg-[#121526] hover:bg-[#16192e] text-[#a0a5c0] hover:text-white border border-[#2a2e4a] transition">6 Proyek?</button>
+            <button data-ask="Apa skill teknologi & marketing Afghani?" class="ai-chip text-[11px] font-mono px-2.5 py-1 rounded-full bg-[#121526] hover:bg-[#16192e] text-[#a0a5c0] hover:text-white border border-[#2a2e4a] transition">Tech &amp; Marketing?</button>
+            <button data-ask="Ceritakan pengalaman kerja Afghani" class="ai-chip text-[11px] font-mono px-2.5 py-1 rounded-full bg-[#121526] hover:bg-[#16192e] text-[#a0a5c0] hover:text-white border border-[#2a2e4a] transition">Pengalaman Kerja?</button>
+            <button data-ask="Pendidikan dan sertifikasi Afghani?" class="ai-chip text-[11px] font-mono px-2.5 py-1 rounded-full bg-[#121526] hover:bg-[#16192e] text-[#a0a5c0] hover:text-white border border-[#2a2e4a] transition">Pendidikan &amp; Sertifikasi?</button>
+          </div>
+
+          <form id="ai-chat-form" class="p-3.5 bg-[#0b0c16] border-t border-[#2a2e4a] flex items-center gap-2">
+            <input id="ai-chat-input" type="text" placeholder="Tanyakan tentang proyek, pengalaman, atau skill Afghani..." class="flex-1 bg-[#121526] border border-[#2a2e4a] rounded-full px-4 py-2 text-xs text-white focus:outline-none focus:border-[#ff5f87]" />
+            <button type="submit" class="px-5 py-2 rounded-full bg-[#ff5f87] hover:bg-[#ff69b4] text-[#0b0c16] font-mono font-semibold text-xs transition">
+              Send
+            </button>
+          </form>
+        </div>
+
+        <!-- Written Bio & Mindset Card (Verbatim from afghani-hilmi.ptajitt15.chatgpt.site) -->
+        <div id="about-bio-panel" class="lg:col-span-6 terminal-card rounded-2xl p-6 space-y-4 text-sm text-[#a0a5c0] leading-relaxed">
+          <p class="text-white font-medium text-base sm:text-lg">
+            Saya <span class="text-[#ff69b4] font-semibold">Afghani Hilmi Al-Ghifari</span>, lulusan Sistem Informasi dari <span class="text-white">Universitas Amikom Yogyakarta</span>. Pengalaman saya mencakup pengembangan web, IT support, operasional laboratorium komputer, dan digital marketing di <span class="text-white">PT Aufa Jaya Indonesia</span>.
+          </p>
+
+          <div class="p-4 rounded-xl bg-[#0b0c16] border border-[#2a2e4a] space-y-2">
+            <div class="font-mono text-xs text-[#ff69b4] uppercase tracking-wider font-semibold">Programmer dengan pola pikir bisnis</div>
+            <p class="text-xs sm:text-sm text-white/90">
+              "Teknologi membangun produk. Marketing membantu orang menemukannya."
+            </p>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+            <div class="p-3.5 rounded-xl bg-[#16192e]/70 border border-[#2a2e4a] space-y-1.5">
+              <div class="font-mono text-[#8be9fd] font-semibold">Sebagai Programmer</div>
+              <p>Mengubah ide menjadi produk yang berguna: antarmuka web, alur bisnis, pengembangan WordPress, integrasi API, dan troubleshooting praktis.</p>
+            </div>
+            <div class="p-3.5 rounded-xl bg-[#16192e]/70 border border-[#2a2e4a] space-y-1.5">
+              <div class="font-mono text-[#50fa7b] font-semibold">Sebagai Digital Marketer</div>
+              <p>Menghubungkan produk dan audiens: Local SEO, kampanye pencarian Google Ads, conversion tracking, dan konten sesuai buyer intent.</p>
+            </div>
+          </div>
+
+          <p class="text-xs">
+            Proyek unggulan saya meliputi <button data-open-proj="edi" class="inline-proj-link text-[#ff69b4] underline underline-offset-4 hover:text-white font-mono">Ghifar Food</button>, <button data-open-proj="resumewesume" class="inline-proj-link text-[#ff69b4] underline underline-offset-4 hover:text-white font-mono">Relasi CRM</button>, dan <button data-open-proj="bandsy" class="inline-proj-link text-[#ff69b4] underline underline-offset-4 hover:text-white font-mono">FinanceTrack</button>.
+          </p>
+
+          <!-- Interactive Kai the Cat Mini-Card -->
+          <div class="pt-3 border-t border-[#2a2e4a] flex items-center justify-between gap-3">
+            <div class="font-mono text-xs text-white/90">
+              🐈‍⬛ <span id="flat-kai-status">Kai (kucing penjaga ruang kerja) di bean bag, saya di kursi kerja.</span>
+            </div>
+            <button id="btn-flat-pet-kai" class="px-3 py-1.5 rounded-full bg-[#16192e] hover:bg-[#ff5f87] text-[#ff69b4] hover:text-[#0b0c16] border border-[#ff5f87]/40 font-mono text-xs shrink-0 transition">
+              🐾 Pet Kai (<span id="kai-purr-count">0</span>)
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Perangkat & Teknologi (Skills) + Layanan ("Yang Bisa Saya Bantu") -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <!-- 4 Skill Categories -->
+        <div class="lg:col-span-6 terminal-card rounded-2xl p-6 space-y-4">
+          <div class="font-mono text-xs uppercase tracking-wider text-[#ff69b4]">Perangkat &amp; Teknologi (Tech Stack)</div>
+          <div class="space-y-3 text-xs">
+            <div>
+              <div class="font-mono text-white font-semibold mb-1.5">Pengembangan Web</div>
+              <div class="flex flex-wrap gap-1.5">
+                <span class="px-2.5 py-1 rounded-full bg-[#0b0c16] border border-[#2a2e4a] text-[#8be9fd]">HTML</span>
+                <span class="px-2.5 py-1 rounded-full bg-[#0b0c16] border border-[#2a2e4a] text-[#8be9fd]">CSS</span>
+                <span class="px-2.5 py-1 rounded-full bg-[#0b0c16] border border-[#2a2e4a] text-[#8be9fd]">JavaScript</span>
+                <span class="px-2.5 py-1 rounded-full bg-[#0b0c16] border border-[#2a2e4a] text-[#8be9fd]">WordPress</span>
+                <span class="px-2.5 py-1 rounded-full bg-[#0b0c16] border border-[#2a2e4a] text-[#8be9fd]">Elementor</span>
+                <span class="px-2.5 py-1 rounded-full bg-[#0b0c16] border border-[#2a2e4a] text-[#8be9fd]">WooCommerce</span>
+              </div>
+            </div>
+            <div>
+              <div class="font-mono text-white font-semibold mb-1.5">Proyek Aplikasi</div>
+              <div class="flex flex-wrap gap-1.5">
+                <span class="px-2.5 py-1 rounded-full bg-[#0b0c16] border border-[#2a2e4a] text-[#50fa7b]">Expo</span>
+                <span class="px-2.5 py-1 rounded-full bg-[#0b0c16] border border-[#2a2e4a] text-[#50fa7b]">Web &amp; Android</span>
+                <span class="px-2.5 py-1 rounded-full bg-[#0b0c16] border border-[#2a2e4a] text-[#50fa7b]">Firebase</span>
+                <span class="px-2.5 py-1 rounded-full bg-[#0b0c16] border border-[#2a2e4a] text-[#50fa7b]">Alur API</span>
+                <span class="px-2.5 py-1 rounded-full bg-[#0b0c16] border border-[#2a2e4a] text-[#50fa7b]">PWA</span>
+              </div>
+            </div>
+            <div>
+              <div class="font-mono text-white font-semibold mb-1.5">Marketing &amp; Analytics</div>
+              <div class="flex flex-wrap gap-1.5">
+                <span class="px-2.5 py-1 rounded-full bg-[#0b0c16] border border-[#2a2e4a] text-[#ff69b4]">Google Ads</span>
+                <span class="px-2.5 py-1 rounded-full bg-[#0b0c16] border border-[#2a2e4a] text-[#ff69b4]">GA4</span>
+                <span class="px-2.5 py-1 rounded-full bg-[#0b0c16] border border-[#2a2e4a] text-[#ff69b4]">Search Console</span>
+                <span class="px-2.5 py-1 rounded-full bg-[#0b0c16] border border-[#2a2e4a] text-[#ff69b4]">Google Tag Manager</span>
+                <span class="px-2.5 py-1 rounded-full bg-[#0b0c16] border border-[#2a2e4a] text-[#ff69b4]">SEO Lokal</span>
+              </div>
+            </div>
+            <div>
+              <div class="font-mono text-white font-semibold mb-1.5">AI &amp; Alur Produk</div>
+              <div class="flex flex-wrap gap-1.5">
+                <span class="px-2.5 py-1 rounded-full bg-[#0b0c16] border border-[#2a2e4a] text-[#a0a5c0]">ChatGPT</span>
+                <span class="px-2.5 py-1 rounded-full bg-[#0b0c16] border border-[#2a2e4a] text-[#a0a5c0]">Prototipe Berbantuan AI</span>
+                <span class="px-2.5 py-1 rounded-full bg-[#0b0c16] border border-[#2a2e4a] text-[#a0a5c0]">Canva</span>
+                <span class="px-2.5 py-1 rounded-full bg-[#0b0c16] border border-[#2a2e4a] text-[#a0a5c0]">VS Code</span>
+                <span class="px-2.5 py-1 rounded-full bg-[#0b0c16] border border-[#2a2e4a] text-[#a0a5c0]">Microsoft Office</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 6 Services ("Yang Bisa Saya Bantu") -->
+        <div class="lg:col-span-6 terminal-card rounded-2xl p-6 space-y-4">
+          <div class="font-mono text-xs uppercase tracking-wider text-[#50fa7b]">Yang Bisa Saya Bantu (Services)</div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+            <div class="p-3.5 rounded-xl bg-[#0b0c16] border border-[#2a2e4a]">
+              <div class="font-bold text-white">01 · Pengembangan Web</div>
+              <p class="text-[#a0a5c0] mt-1">Website responsif dan aplikasi web sesuai kebutuhan bisnis Anda.</p>
+            </div>
+            <div class="p-3.5 rounded-xl bg-[#0b0c16] border border-[#2a2e4a]">
+              <div class="font-bold text-white">02 · Website Optimization</div>
+              <p class="text-[#a0a5c0] mt-1">Membuat website lebih mudah digunakan, cepat dijelajahi, dan jelas ditindaklanjuti.</p>
+            </div>
+            <div class="p-3.5 rounded-xl bg-[#0b0c16] border border-[#2a2e4a]">
+              <div class="font-bold text-white">03 · SEO</div>
+              <p class="text-[#a0a5c0] mt-1">Konten dan struktur website yang berfokus pada pencarian relevan dan kebutuhan lokal.</p>
+            </div>
+            <div class="p-3.5 rounded-xl bg-[#0b0c16] border border-[#2a2e4a]">
+              <div class="font-bold text-white">04 · Google Ads</div>
+              <p class="text-[#a0a5c0] mt-1">Perencanaan kampanye pencarian yang berfokus pada inquiry relevan dan pengukuran jelas.</p>
+            </div>
+            <div class="p-3.5 rounded-xl bg-[#0b0c16] border border-[#2a2e4a]">
+              <div class="font-bold text-white">05 · Analytics</div>
+              <p class="text-[#a0a5c0] mt-1">Memahami traffic, aksi pengunjung, dan sinyal konversi di website (GA4 &amp; GTM).</p>
+            </div>
+            <div class="p-3.5 rounded-xl bg-[#0b0c16] border border-[#2a2e4a]">
+              <div class="font-bold text-white">06 · AI &amp; Otomatisasi</div>
+              <p class="text-[#a0a5c0] mt-1">Cara praktis mengurangi pekerjaan berulang dan membuat prototipe produk digital.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- 04 CONTACT SECTION (NOTHING OS PHONE + INQUIRY FORM + SPOTIFY)      -->
+    <!-- =================================================================== -->
+    <section id="sec-contact" class="space-y-6 scroll-mt-20 pb-16">
+      <div class="flex items-baseline gap-3 border-b border-[#2a2e4a] pb-4">
+        <span class="font-mono text-sm text-[#ff5f87] font-bold">04</span>
+        <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-white">Contact</h2>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        <!-- Nothing OS Smartphone Mockup (Real Contact Data from afghani-hilmi.ptajitt15.chatgpt.site) -->
+        <div class="lg:col-span-6 mx-auto w-full max-w-md bg-[#0e101d] border-2 border-[#2a2e4a] rounded-[36px] p-6 shadow-2xl space-y-5 relative">
+          <div class="w-16 h-1.5 bg-[#2a2e4a] rounded-full mx-auto"></div>
+
+          <div class="text-center py-3 border-b border-[#2a2e4a]/70">
+            <div id="phone-pixel-clock" class="font-pixel text-5xl sm:text-6xl text-white tracking-widest">10:43</div>
+            <div id="contact-clock-display" class="font-mono text-xs uppercase tracking-widest text-[#a0a5c0] mt-2">
+              TUE 27 OCT · CILEGON, BANTEN
+            </div>
+          </div>
+
+          <div class="text-center space-y-1">
+            <h3 class="text-xl font-bold text-white">Afghani Hilmi Al-Ghifari</h3>
+            <p class="font-mono text-xs text-[#ff69b4]">Programmer × Digital Marketing · Cilegon, Banten</p>
+          </div>
+
+          <div class="space-y-2.5 font-mono text-xs">
+            <button id="btn-copy-email" class="w-full p-3.5 rounded-2xl bg-[#121526] hover:bg-[#16192e] border border-[#2a2e4a] flex items-center justify-between text-left transition group">
+              <div class="truncate pr-2">
+                <span class="text-[10px] uppercase text-[#a0a5c0] block">email (click to copy)</span>
+                <span class="text-white group-hover:text-[#ff69b4] truncate block">afghani.9599@students.amikom.ac.id</span>
+              </div>
+              <span id="copy-email-badge" class="px-2.5 py-1 rounded-full bg-[#16192e] text-[#a0a5c0] text-[10px] shrink-0">copy</span>
+            </button>
+
+            <div class="grid grid-cols-2 gap-2.5">
+              <a href="https://wa.me/6289667822526" target="_blank" rel="noopener noreferrer" class="p-3.5 rounded-2xl bg-[#121526] hover:bg-[#16192e] border border-[#2a2e4a] block transition group">
+                <span class="text-[10px] uppercase text-[#50fa7b] block">whatsapp</span>
+                <span class="text-white group-hover:text-[#50fa7b] mt-0.5 block truncate">+62 896-6782-2526</span>
+              </a>
+              <a href="https://afghani-hilmi.ptajitt15.chatgpt.site/" target="_blank" rel="noopener noreferrer" class="p-3.5 rounded-2xl bg-[#121526] hover:bg-[#16192e] border border-[#2a2e4a] block transition group">
+                <span class="text-[10px] uppercase text-[#8be9fd] block">website</span>
+                <span class="text-white group-hover:text-[#8be9fd] mt-0.5 block truncate">afghani-hilmi.site</span>
+              </a>
+            </div>
+
+            <div class="p-3.5 rounded-2xl bg-[#121526] border border-[#2a2e4a] flex items-center justify-between">
+              <div>
+                <span class="text-[10px] uppercase text-[#ff69b4] block">W. Awwwards</span>
+                <span class="text-white">Afghani's Desk is a nominee</span>
+              </div>
+              <span class="font-bold text-base text-[#ff5f87]">W.</span>
+            </div>
+
+            <button id="btn-contact-cv" class="w-full p-4 rounded-2xl bg-[#ff5f87] hover:bg-[#ff69b4] text-[#0b0c16] font-semibold flex items-center justify-between transition pink-glow">
+              <div class="text-left">
+                <span class="text-[10px] uppercase opacity-80 block">cv.pdf</span>
+                <span class="text-sm font-bold">Download my resume</span>
+              </div>
+              <span class="text-lg">⬇</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Right Column: Interactive Inquiry Form ("Saya Recruiter / Saya Punya Proyek") + Spotify Widget -->
+        <div class="lg:col-span-6 space-y-5">
+          <!-- Inquiry Form from afghani-hilmi.ptajitt15.chatgpt.site -->
+          <div class="terminal-card rounded-2xl p-6 space-y-4">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <div class="font-mono text-xs uppercase tracking-wider text-[#ff69b4]">Kirim Pesan / Kolaborasi</div>
+              <div class="inline-flex rounded-full bg-[#0b0c16] border border-[#2a2e4a] p-1 font-mono text-[11px]">
+                <button type="button" id="btn-mode-recruiter" class="px-3 py-1 rounded-full bg-[#ff5f87] text-[#0b0c16] font-semibold transition">Saya Recruiter</button>
+                <button type="button" id="btn-mode-project" class="px-3 py-1 rounded-full text-[#a0a5c0] hover:text-white transition">Saya Punya Proyek</button>
+              </div>
+            </div>
+
+            <form id="contact-inquiry-form" class="space-y-3 text-xs">
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <input id="inq-name" type="text" required placeholder="Nama Anda" class="bg-[#0b0c16] border border-[#2a2e4a] rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-[#ff5f87]" />
+                <input id="inq-company" type="text" placeholder="Perusahaan / Bisnis" class="bg-[#0b0c16] border border-[#2a2e4a] rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-[#ff5f87]" />
+              </div>
+              <textarea id="inq-message" rows="3" required placeholder="Ceritakan peluang kerja atau kebutuhan proyek web / SEO / Google Ads Anda..." class="w-full bg-[#0b0c16] border border-[#2a2e4a] rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:border-[#ff5f87]"></textarea>
+              <div class="flex flex-wrap items-center justify-between gap-3">
+                <span id="inq-feedback" class="font-mono text-[11px] text-[#50fa7b]">Siap dikirim via WhatsApp (+62 896-6782-2526)</span>
+                <button type="submit" class="px-5 py-2.5 rounded-full bg-[#ff5f87] hover:bg-[#ff69b4] text-[#0b0c16] font-mono font-semibold text-xs transition pink-glow">
+                  Kirim via WhatsApp ↗
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Spotify Widget -->
+          <div class="terminal-card rounded-2xl p-6 space-y-4">
+            <div class="flex items-center justify-between font-mono text-xs">
+              <span class="text-[#50fa7b] flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-[#50fa7b] animate-ping"></span>
+                Last played just now
+              </span>
+              <div id="spotify-eq" class="flex items-end gap-1 h-5">
+                <span class="eq-bar h-2"></span>
+                <span class="eq-bar h-3"></span>
+                <span class="eq-bar h-1.5"></span>
+                <span class="eq-bar h-2.5"></span>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-4">
+              <div id="vinyl-disc" class="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#ff5f87]/30 via-[#16192e] to-[#8be9fd]/30 border border-[#2a2e4a] flex items-center justify-center text-2xl transition-transform duration-700">
+                💿
+              </div>
+              <div>
+                <div class="text-lg font-bold text-white">Quartz</div>
+                <div class="text-xs text-[#a0a5c0]">French 79</div>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-3 font-mono text-xs">
+              <button id="btn-play-quartz" class="flex-1 px-4 py-2 rounded-full bg-[#16192e] hover:bg-[#ff5f87] text-white hover:text-[#0b0c16] border border-[#2a2e4a] font-semibold transition">
+                ▶ Play Synth Preview
+              </button>
+              <a href="https://open.spotify.com/search/Quartz%20French%2079" target="_blank" rel="noopener noreferrer" class="px-4 py-2 rounded-full bg-[#121526] hover:bg-[#16192e] text-[#50fa7b] border border-[#2a2e4a] transition">
+                Open in Spotify ↗
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer Statement from afghani-hilmi.ptajitt15.chatgpt.site -->
+      <footer class="pt-8 border-t border-[#2a2e4a] flex flex-wrap items-center justify-between gap-4 font-mono text-xs text-[#a0a5c0]">
+        <div>Programmer × Digital Marketing. Membangun solusi digital. Mendukung pertumbuhan bisnis.</div>
+        <div>© 2026 Afghani Hilmi Al-Ghifari. Hak cipta dilindungi.</div>
+      </footer>
+    </section>
+  </main>
+
+  <!-- ===================================================================== -->
+  <!-- RESUME / CV MODAL (100% REAL CV DATA OF AFGHANI HILMI AL-GHIFARI)     -->
+  <!-- ===================================================================== -->
+  <div id="cv-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-[#121526] border border-[#2a2e4a] rounded-2xl max-w-3xl w-full max-h-[88vh] flex flex-col overflow-hidden shadow-2xl">
+      <div class="bg-[#16192e] px-5 py-3.5 border-b border-[#2a2e4a] flex items-center justify-between">
+        <div class="font-mono text-xs text-white flex items-center gap-2">
+          <span>📄 AFGHANI-HILMI-AL-GHIFARI (Resume).pdf</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <button id="btn-download-txt-cv" class="px-3.5 py-1 rounded-full bg-[#ff5f87] hover:bg-[#ff69b4] text-[#0b0c16] font-mono font-semibold text-xs transition">
+            ⬇ Save Resume (.txt)
+          </button>
+          <button id="btn-close-cv" class="px-2.5 py-1 rounded-full bg-[#121526] hover:bg-[#2a2e4a] text-[#a0a5c0] font-mono text-xs">✕</button>
+        </div>
+      </div>
+      <div class="p-6 overflow-y-auto space-y-5 text-xs sm:text-sm text-[#a0a5c0] leading-relaxed">
+        <div class="border-b border-[#2a2e4a] pb-4 flex flex-wrap justify-between items-start gap-2">
+          <div>
+            <h3 class="text-xl font-bold text-white">AFGHANI HILMI AL-GHIFARI</h3>
+            <p class="font-mono text-xs text-[#ff69b4]">Programmer × Digital Marketing · Cilegon, Banten, Indonesia</p>
+          </div>
+          <div class="font-mono text-xs text-right">
+            <div>afghani.9599@students.amikom.ac.id</div>
+            <div>+62 896-6782-2526</div>
+            <div>afghani-hilmi.ptajitt15.chatgpt.site</div>
+          </div>
+        </div>
+        <div>
+          <h4 class="font-mono text-xs uppercase tracking-wider text-white mb-1.5">Ringkasan Profil</h4>
+          <p>Lulusan S1 Sistem Informasi dari Universitas Amikom Yogyakarta (IPK 3.63). Berpengalaman dalam pengembangan web, IT support, operasional laboratorium komputer, dan digital marketing di PT Aufa Jaya Indonesia.</p>
+        </div>
+        <div>
+          <h4 class="font-mono text-xs uppercase tracking-wider text-white mb-2">Pengalaman Kerja</h4>
+          <div class="space-y-3">
+            <div class="experience-card pl-3">
+              <div class="flex justify-between font-medium text-white"><span>PT Aufa Jaya Indonesia — Digital Marketing</span><span class="font-mono text-xs text-[#ff5f87]">APR 2025 – PRESENT</span></div>
+              <p class="text-xs mt-0.5">Strategi digital dan konten, kampanye berbayar, SEO dan landing page, analytics, pelaporan, serta kolaborasi dengan desain, sales, dan produk.</p>
+            </div>
+            <div class="experience-card pl-3">
+              <div class="flex justify-between font-medium text-white"><span>PT Multi Lintas Persada — Administrasi Logistik</span><span class="font-mono text-xs text-[#ff5f87]">NOV 2023 – APR 2025</span></div>
+              <p class="text-xs mt-0.5">Dokumentasi pengiriman dan penerimaan, pencatatan keluar-masuk barang, pemeriksaan stok, koordinasi distribusi, serta laporan operasional.</p>
+            </div>
+            <div class="experience-card pl-3">
+              <div class="flex justify-between font-medium text-white"><span>PT Suba Jaya Indonesia — HSE Officer</span><span class="font-mono text-xs text-[#ff5f87]">JUL 2023 – OCT 2023</span></div>
+              <p class="text-xs mt-0.5">Penyusunan Job Safety Analysis, inspeksi kendaraan, pemantauan peralatan keselamatan, serta pengelolaan dokumen dan fasilitas sesuai standar K3.</p>
+            </div>
+            <div class="experience-card pl-3">
+              <div class="flex justify-between font-medium text-white"><span>SMK Asyuhada Al-Khairiyah — Kepala Laboratorium Komputer</span><span class="font-mono text-xs text-[#ff5f87]">NOV 2021 – JUL 2023</span></div>
+              <p class="text-xs mt-0.5">Perencanaan layanan laboratorium, perawatan hardware dan aplikasi, pengujian teknologi, troubleshooting, serta instalasi dan konfigurasi jaringan lokal.</p>
+            </div>
+            <div class="experience-card pl-3">
+              <div class="flex justify-between font-medium text-white"><span>PT Tourezia Cakra Inspira — Magang Web Developer</span><span class="font-mono text-xs text-[#ff5f87]">JUN 2020 – SEP 2020</span></div>
+              <p class="text-xs mt-0.5">Pembuatan dan pengembangan website, pengujian, debugging kode, dan kolaborasi dengan designer.</p>
+            </div>
+            <div class="experience-card pl-3">
+              <div class="flex justify-between font-medium text-white"><span>Universitas Amikom Yogyakarta — Student Staff IT Support</span><span class="font-mono text-xs text-[#ff5f87]">JAN 2020 – APR 2020</span></div>
+              <p class="text-xs mt-0.5">Instalasi PC dan perangkat jaringan lokal, diagnosis PC/peripheral, serta perbaikan dan konfigurasi ulang sistem.</p>
+            </div>
+          </div>
+        </div>
+        <div>
+          <h4 class="font-mono text-xs uppercase tracking-wider text-white mb-1.5">Pendidikan</h4>
+          <p class="text-white font-medium">Sarjana Sistem Informasi — Universitas Amikom Yogyakarta (2016 – 2021) · IPK 3.63</p>
+          <p class="text-xs">Skripsi: Membuat Toko Online Berbasis Android di Mitracom Cilegon</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- APPLICATION & 3D CHARACTER ANIMATION SCRIPT                           -->
+  <!-- ===================================================================== -->
+  <script>
+    // 1. FULL REAL PROJECT & EXPERIENCE DATA FROM https://afghani-hilmi.ptajitt15.chatgpt.site/
+    const PROJECTS = [
+      {
+        id: 'edi',
+        slug: 'ghifar-food',
+        num: '1',
+        name: 'Ghifar Food',
+        category: 'Aplikasi Bisnis · Demo / Dalam Pengembangan',
+        tagline: 'Ruang kerja restoran yang menghubungkan pesanan, aktivitas dapur, stok, dan operasional harian.',
+        recording: 'Demo Workspace: menghubungkan alur pesanan pelanggan (POS), antrean aktivitas dapur real-time, pemantauan stok bahan, dan rekap operasional harian dalam satu aplikasi web PWA.',
+        why: [
+          "Operasional restoran sering terhambat karena pencatatan pesanan, status masakan di dapur, dan stok bahan baku berjalan terpisah.",
+          "Saya membangun Ghifar Food sebagai Restaurant OS terpadu agar tim kasir, dapur, dan pengelola stok dapat bekerja secara sinkron dari perangkat apa pun."
+        ],
+        what: [
+          "Menghubungkan pesanan masuk langsung ke layar aktivitas dapur (Kitchen Display).",
+          "Memantau ketersediaan stok harian dan memberi peringatan bahan yang menipis.",
+          "Menyajikan ringkasan transaksi dan performa operasional harian secara real-time."
+        ],
+        how: [
+          "Dibangun sebagai Progressive Web App (PWA) yang responsif untuk tablet kasir, layar dapur, dan smartphone.",
+          "Menggunakan arsitektur state terstruktur untuk sinkronisasi status pesanan, meja, dan inventaris."
+        ],
+        decisions: [
+          "Antarmuka dirancang dengan kontras tinggi dan tombol cepat agar staf dapur maupun kasir dapat mengoperasikannya tanpa hambatan di jam sibuk."
+        ],
+        deps: ["Web Application", "PWA", "Operations", "JavaScript", "Restaurant OS"],
+        repo: "https://ghifar-food-restaurant-os.ptajitt15.chatgpt.site"
+      },
+      {
+        id: 'resumewesume',
+        slug: 'relasi-crm',
+        num: '2',
+        name: 'Relasi CRM',
+        category: 'Ruang Kerja Penjualan B2B · Demo',
+        tagline: 'Ruang kerja B2B untuk perusahaan pelanggan, PIC, pipeline, penawaran, dan invoice.',
+        recording: 'Demo B2B Workspace: manajemen direktori perusahaan klien, kontak PIC, tahapan sales pipeline, pembuatan quotation, hingga pelacakan status pembayaran invoice.',
+        why: [
+          "Dalam penjualan B2B, data perusahaan klien, riwayat komunikasi PIC, dokumen penawaran (quotation), dan tagihan (invoice) sering tercecer di banyak spreadsheet.",
+          "Relasi CRM menyatukan seluruh siklus penjualan B2B ke dalam satu ruang kerja yang rapi dan mudah ditindaklanjuti."
+        ],
+        what: [
+          "Mengelola database perusahaan pelanggan beserta daftar PIC dan riwayat interaksi.",
+          "Melacak pergerakan prospek di sales pipeline dari tahap pendekatan hingga closing.",
+          "Menyusun dokumen penawaran harga (quotation) dan mengonversinya menjadi invoice."
+        ],
+        how: [
+          "Aplikasi web modular dengan alur kerja penjualan B2B terintegrasi.",
+          "Dilengkapi fitur filter status pipeline, nilai potensi proyek, dan jatuh tempo pembayaran."
+        ],
+        decisions: [
+          "Fokus pada kecepatan input data oleh tim sales dan kejelasan visibilitas revenue bagi manajemen."
+        ],
+        deps: ["Web Application", "B2B CRM", "Sales Workflow", "Quotation & Invoice"],
+        repo: "https://afghani-hilmi.ptajitt15.chatgpt.site/"
+      },
+      {
+        id: 'bandsy',
+        slug: 'financetrack',
+        num: '3',
+        name: 'FinanceTrack',
+        category: 'Proyek Web & Android · Dalam Pengembangan',
+        tagline: 'Proyek keuangan harian untuk transaksi, multi-dompet, anggaran, dan tujuan tabungan.',
+        recording: 'Di dalam aplikasi: pencatatan pemasukan/pengeluaran harian, manajemen saldo lintas dompet (rekening, e-wallet, tunai), batas anggaran bulanan, dan progres tabungan.',
+        why: [
+          "Banyak orang kesulitan melacak uang karena tersebar di rekening bank, e-wallet, dan uang tunai.",
+          "FinanceTrack hadir sebagai pendamping keuangan harian lintas Web & Android agar pengguna tahu persis ke mana uang mereka mengalir."
+        ],
+        what: [
+          "Mencatat transaksi harian dengan kategorisasi cepat dan dukungan multi-dompet (multi-wallet).",
+          "Mengatur batas anggaran (budgeting) per kategori dan memantau sisa kuota belanja.",
+          "Melacak target tabungan (savings goals) dengan indikator progres visual."
+        ],
+        how: [
+          "Dikembangkan untuk ekosistem Web & Android dengan sinkronisasi data berbasis Firebase.",
+          "Menyediakan ringkasan arus kas bulanan yang ringan dan instan."
+        ],
+        decisions: [
+          "Alur input transaksi dibuat sesederhana mungkin (kurang dari 5 detik per transaksi) agar kebiasaan mencatat keuangan tetap konsisten."
+        ],
+        deps: ["Web & Android", "Firebase", "Personal Finance", "Multi-Wallet"],
+        repo: "https://afghani-hilmi.ptajitt15.chatgpt.site/"
+      },
+      {
+        id: 'mentora',
+        slug: 'outfitmatch-ai',
+        num: '4',
+        name: 'OutfitMatch AI',
+        category: 'Fashion dengan Bantuan AI · Demo',
+        tagline: 'Demo fashion untuk mengeksplorasi outfit, preferensi avatar, dan kombinasi isi lemari.',
+        recording: 'Demo AI Fashion: memilih preferensi gaya dan karakter avatar, memadukan item pakaian dari lemari digital, serta mendapatkan rekomendasi outfit yang serasi.',
+        why: [
+          "Memilih kombinasi pakaian yang cocok untuk berbagai acara sering memakan waktu meskipun isi lemari penuh.",
+          "OutfitMatch AI menggabungkan eksplorasi visual dan rekomendasi berbantuan AI untuk mempermudah mix-and-match pakaian."
+        ],
+        what: [
+          "Mengeksplorasi kombinasi outfit berdasarkan acara, warna, dan preferensi gaya.",
+          "Menyesuaikan preferensi avatar dan menguji padu-padan koleksi isi lemari (wardrobe).",
+          "Memberikan inspirasi tampilan harian secara interaktif di Web & perangkat mobile."
+        ],
+        how: [
+          "Dibangun menggunakan Expo untuk mendukung pengalaman lintas platform (Web & Android).",
+          "Mengintegrasikan logika pencocokan atribut pakaian dan prototipe berbantuan AI."
+        ],
+        decisions: [
+          "Mengutamakan antarmuka visual berbasis kartu yang intuitif dan menyenangkan saat pengguna bereksperimen dengan gaya baru."
+        ],
+        deps: ["Expo", "Web & Android", "AI-Assisted Fashion", "Wardrobe UI"],
+        repo: "https://afghani-hilmi.ptajitt15.chatgpt.site/"
+      },
+      {
+        id: 'naqsha',
+        slug: 'kampung-kita',
+        num: '5',
+        name: 'Kampung Kita',
+        category: 'Pengembangan Game · MVP',
+        tagline: 'Game farming dan kehidupan desa berlatar Desa Sukamerta, desa fiktif Indonesia.',
+        recording: 'MVP Gameplay: menjelajahi Desa Sukamerta, bercocok tanam di lahan pertanian, berinteraksi dengan warga desa, dan membangun kehidupan pedesaan khas Indonesia.',
+        why: [
+          "Saya ingin menghadirkan nuansa hangat kehidupan desa Indonesia ke dalam sebuah game simulasi pertanian dan komunitas yang bisa dimainkan langsung di browser.",
+          "Latar Desa Sukamerta dirancang dengan detail lokal yang akrab bagi pemain Indonesia."
+        ],
+        what: [
+          "Mekanisme farming (mengolah tanah, menanam, menyiram, dan memanen hasil bumi).",
+          "Eksplorasi peta Desa Sukamerta dan interaksi dengan karakter warga lokal.",
+          "Sistem siklus waktu harian dan pengelolaan sumber daya desa."
+        ],
+        how: [
+          "Dibangun sebagai Web Game interaktif dengan fokus pada performa ringan di browser.",
+          "Menggunakan sistem tilemap, state manajemen inventaris, dan prototipe dunia 2D/isometrik."
+        ],
+        decisions: [
+          "Memulai dari cakupan MVP yang solid pada loop inti (bertani & eksplorasi desa) agar gameplay terasa responsif sejak menit pertama."
+        ],
+        deps: ["Web Game", "Farming RPG", "World Prototype", "Desa Sukamerta"],
+        repo: "https://afghani-hilmi.ptajitt15.chatgpt.site/"
+      },
+      {
+        id: 'fotocopy',
+        slug: 'fotocopy-websites',
+        num: '6',
+        name: 'Fotocopy Websites',
+        category: 'Pengembangan Web + Marketing · Website Bisnis',
+        tagline: 'Pekerjaan website untuk penjualan, sewa, pencarian lokal, dan inquiry mesin fotocopy.',
+        recording: 'Implementasi Bisnis: katalog penjualan & sewa mesin fotocopy, struktur landing page teroptimasi Local SEO, serta pelacakan konversi inquiry WhatsApp & Google Ads.',
+        why: [
+          "Bisnis penjualan dan sewa mesin fotocopy B2B/B2C membutuhkan kehadiran pencarian lokal yang kuat dan halaman produk yang langsung menjawab kebutuhan calon pembeli.",
+          "Proyek ini menggabungkan keahlian teknis pengembangan web WordPress/Elementor dengan strategi Digital Marketing berbasis konversi."
+        ],
+        what: [
+          "Menyajikan katalog spesifikasi paket penjualan dan sewa mesin fotocopy secara jelas.",
+          "Mengoptimalkan struktur halaman dan konten untuk pencarian lokal (Local SEO) dan kampanye Google Ads.",
+          "Memasang pelacakan konversi (GA4 & Google Tag Manager) untuk mengukur setiap klik inquiry WhatsApp dan formulir penawaran."
+        ],
+        how: [
+          "Dikembangkan menggunakan WordPress dan Elementor dengan optimasi kecepatan dan struktur heading ramah SEO.",
+          "Terhubung langsung dengan Google Analytics 4, Google Search Console, dan Google Tag Manager."
+        ],
+        decisions: [
+          "Menempatkan CTA konsultasi & penawaran harga di titik strategis sesuai buyer intent untuk memaksimalkan rasio konversi pengunjung menjadi leads."
+        ],
+        deps: ["WordPress", "Elementor", "Local SEO", "Google Ads", "GA4 & GTM"],
+        repo: "https://afghani-hilmi.ptajitt15.chatgpt.site/"
+      }
+    ];
+
+    const EXPERIENCES = [
+      {
+        company: "PT Aufa Jaya Indonesia",
+        role: "Digital Marketing",
+        period: "APR 2025 – PRESENT",
+        desc: "Strategi digital dan konten, kampanye berbayar (Google Ads), SEO dan landing page, analytics (GA4 & GTM), pelaporan, serta kolaborasi dengan tim desain, sales, dan produk."
+      },
+      {
+        company: "PT Multi Lintas Persada",
+        role: "Administrasi Logistik",
+        period: "NOV 2023 – APR 2025",
+        desc: "Dokumentasi pengiriman dan penerimaan, pencatatan keluar-masuk barang, pemeriksaan stok, koordinasi distribusi, serta laporan operasional."
+      },
+      {
+        company: "PT Suba Jaya Indonesia",
+        role: "HSE Officer",
+        period: "JUL 2023 – OCT 2023",
+        desc: "Penyusunan Job Safety Analysis (JSA), inspeksi kendaraan, pemantauan peralatan keselamatan, serta pengelolaan dokumen dan fasilitas sesuai standar K3."
+      },
+      {
+        company: "SMK Asyuhada Al-Khairiyah",
+        role: "Kepala Laboratorium Komputer",
+        period: "NOV 2021 – JUL 2023",
+        desc: "Perencanaan layanan laboratorium, perawatan hardware dan aplikasi, pengujian teknologi, troubleshooting, serta instalasi dan konfigurasi jaringan lokal."
+      },
+      {
+        company: "PT Tourezia Cakra Inspira",
+        role: "Magang Web Developer",
+        period: "10 JUN 2020 – 10 SEP 2020",
+        desc: "Pembuatan dan pengembangan website, pengujian fungsionalitas, debugging kode, dan kolaborasi dengan designer."
+      },
+      {
+        company: "Universitas Amikom Yogyakarta",
+        role: "Magang IT Support / Student Staff — IT Support",
+        period: "30 JAN 2020 – 25 APR 2020",
+        desc: "Instalasi PC dan perangkat jaringan lokal, diagnosis PC/peripheral, serta perbaikan dan konfigurasi ulang sistem."
+      }
+    ];
+
+    // 2. WEB AUDIO SYNTHESIZER
+    let soundEnabled = false;
+    let audioCtx = null;
+    let synthLoopInterval = null;
+
+    function ensureAudio() {
+      if (!audioCtx) {
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        if (AudioContextClass) audioCtx = new AudioContextClass();
+      }
+      if (audioCtx && audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+    }
+
+    function playClickTone(freq = 560, duration = 0.045) {
+      if (!soundEnabled) return;
+      ensureAudio();
+      if (!audioCtx) return;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+      gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + duration);
+    }
+
+    function playMeowSound() {
+      if (!soundEnabled) return;
+      ensureAudio();
+      if (!audioCtx) return;
+      const now = audioCtx.currentTime;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(480, now);
+      osc.frequency.exponentialRampToValueAtTime(760, now + 0.12);
+      osc.frequency.exponentialRampToValueAtTime(420, now + 0.35);
+      gain.gain.setValueAtTime(0.08, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.38);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start(now);
+      osc.stop(now + 0.38);
+    }
+
+    function updateSoundButtonUI() {
+      const btn = document.getElementById('btn-sound-toggle');
+      if (btn) {
+        btn.textContent = soundEnabled ? '🔊 Sound On' : '🔇 Mute';
+        btn.className = soundEnabled
+          ? 'px-3 py-1 rounded-full bg-[#ff5f87]/20 border border-[#ff5f87] text-[#ff69b4] transition'
+          : 'px-3 py-1 rounded-full bg-[#121526] hover:bg-[#16192e] border border-[#2a2e4a] text-[#a0a5c0] hover:text-white transition';
+      }
+    }
+
+    // 3. SPEECH BUBBLE TOAST FOR 3D CHARACTERS
+    let speechTimeout = null;
+    function showCharacterSpeech(emoji, text) {
+      const bubble = document.getElementById('char-speech-bubble');
+      const emojiEl = document.getElementById('char-speech-emoji');
+      const textEl = document.getElementById('char-speech-text');
+      if (!bubble) return;
+      emojiEl.textContent = emoji;
+      textEl.textContent = text;
+      bubble.classList.remove('opacity-0', '-translate-y-2');
+      bubble.classList.add('opacity-100', 'translate-y-0');
+      if (speechTimeout) clearTimeout(speechTimeout);
+      speechTimeout = setTimeout(() => {
+        bubble.classList.add('opacity-0', '-translate-y-2');
+        bubble.classList.remove('opacity-100', 'translate-y-0');
+      }, 3600);
+    }
+
+    // 4. BOOT SEQUENCE
+    function initBootSequence() {
+      const lossEl = document.getElementById('boot-loss');
+      const metricsEl = document.getElementById('boot-metrics');
+      const pctEl = document.getElementById('boot-pct');
+      const barEl = document.getElementById('boot-bar');
+
+      let progress = 0;
+      const timer = setInterval(() => {
+        progress += 10;
+        if (progress > 100) progress = 100;
+
+        const step = Math.round((progress / 100) * 6000);
+        const loss = Math.max(0.014, 2.590 * Math.pow(1 - (progress / 105), 2.2)).toFixed(3);
+        const tok = ((progress / 100) * 52.8).toFixed(1);
+        const gpu = Math.min(99, Math.round(progress * 0.98));
+
+        if (lossEl) lossEl.textContent = loss;
+        if (metricsEl) metricsEl.textContent = `step ${step}/6000 · ${tok}k tok/s · gpu ${gpu}%`;
+        if (pctEl) pctEl.textContent = `${progress}%`;
+        if (barEl) barEl.style.width = `${progress}%`;
+
+        if (progress >= 100) clearInterval(timer);
+      }, 80);
+
+      const dismissBoot = (withSound, startInRoom) => {
+        soundEnabled = withSound;
+        updateSoundButtonUI();
+        if (withSound) playClickTone(680, 0.08);
+        const boot = document.getElementById('boot-screen');
+        if (boot) {
+          boot.classList.add('opacity-0', 'pointer-events-none');
+          setTimeout(() => { boot.style.display = 'none'; }, 400);
+        }
+        setWorkspaceMode(startInRoom ? 'room' : 'flat');
+      };
+
+      document.getElementById('btn-enter-sound').addEventListener('click', () => dismissBoot(true, true));
+      document.getElementById('btn-enter-mute').addEventListener('click', () => dismissBoot(false, true));
+      document.getElementById('btn-enter-flat').addEventListener('click', () => dismissBoot(false, false));
+    }
+
+    // 5. MODE SWITCHING
+    let currentMode = 'room';
+
+    function setWorkspaceMode(mode) {
+      currentMode = mode;
+      const roomView = document.getElementById('room-view');
+      const flatView = document.getElementById('flat-view');
+      const label = document.getElementById('mode-toggle-label');
+
+      if (mode === 'room') {
+        roomView.classList.remove('hidden');
+        flatView.classList.add('hidden');
+        label.textContent = 'Flat version';
+        initThreeRoom();
+        onRoomResize();
+      } else {
+        roomView.classList.add('hidden');
+        flatView.classList.remove('hidden');
+        label.textContent = '◀ Back to the room';
+      }
+      playClickTone(580, 0.04);
+    }
+
+    // 6. PROJECTS & INSPECTOR
+    let selectedProjectId = 'edi';
+    let currentFilter = 'all';
+
+    function renderProjects() {
+      const listEl = document.getElementById('project-cards-list');
+      listEl.innerHTML = PROJECTS.map(p => {
+        const isSelected = (currentFilter === 'all' && p.id === selectedProjectId) || currentFilter === p.id;
+        return `
+          <div data-select-proj="${p.id}" class="cursor-pointer rounded-2xl p-4 border transition-all ${
+            isSelected
+              ? 'bg-[#16192e] border-[#ff5f87] pink-glow'
+              : 'bg-[#121526] hover:bg-[#16192e] border-[#2a2e4a]'
+          }">
+            <div class="flex items-center justify-between font-mono text-xs mb-1">
+              <span class="font-bold text-white text-sm">${p.name}</span>
+              <span class="text-[#ff5f87]">0${p.num}</span>
+            </div>
+            <div class="font-mono text-[10px] text-[#8be9fd] mb-1.5">${p.category}</div>
+            <p class="text-xs text-[#a0a5c0] leading-relaxed">${p.tagline}</p>
+          </div>
+        `;
+      }).join('');
+
+      document.querySelectorAll('[data-select-proj]').forEach(card => {
+        card.addEventListener('click', () => {
+          selectedProjectId = card.getAttribute('data-select-proj');
+          currentFilter = selectedProjectId;
+          syncFilterButtons();
+          playClickTone(620, 0.04);
+          renderProjects();
+          renderProjectInspector();
+        });
+      });
+    }
+
+    function syncFilterButtons() {
+      document.querySelectorAll('.proj-filter-btn').forEach(btn => {
+        const proj = btn.getAttribute('data-proj');
+        if (proj === currentFilter) {
+          btn.className = 'proj-filter-btn px-3 py-1.5 rounded-full bg-[#ff5f87] text-[#0b0c16] font-semibold transition';
+        } else {
+          btn.className = 'proj-filter-btn px-3 py-1.5 rounded-full bg-[#121526] hover:bg-[#16192e] text-[#a0a5c0] hover:text-white border border-[#2a2e4a] transition';
+        }
+      });
+    }
+
+    function renderProjectInspector() {
+      const inspector = document.getElementById('project-inspector');
+      const itemsToRender = currentFilter === 'all'
+        ? PROJECTS
+        : PROJECTS.filter(p => p.id === currentFilter);
+
+      inspector.innerHTML = itemsToRender.map(p => `
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 bg-[#121526]/70 border border-[#2a2e4a] rounded-2xl p-4 sm:p-6">
+          <!-- Left Window: Demo Recording Window -->
+          <div class="lg:col-span-5 terminal-card rounded-xl overflow-hidden flex flex-col justify-between">
+            <div class="bg-[#16192e] px-4 py-2.5 border-b border-[#2a2e4a] flex items-center justify-between font-mono text-xs">
+              <span class="text-white font-semibold">${p.name}</span>
+              <span class="text-[#a0a5c0] tracking-widest">− □ ×</span>
+            </div>
+            <div class="p-5 space-y-4 flex-1 flex flex-col justify-between">
+              <div class="space-y-1.5">
+                <div class="font-mono text-[11px] text-[#50fa7b]">${p.category}</div>
+                <h3 class="text-2xl font-bold text-white">${p.name}</h3>
+                <p class="text-sm text-[#ff69b4] font-medium">${p.tagline}</p>
+              </div>
+
+              <div class="rounded-xl bg-[#0b0c16] border border-[#2a2e4a] p-4 space-y-3 font-mono text-xs">
+                <div class="flex items-center justify-between text-[11px]">
+                  <span class="text-[#50fa7b] flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-[#50fa7b] animate-pulse"></span> preview/${p.slug}.app</span>
+                  <span class="text-[#8be9fd]">live</span>
+                </div>
+                <p class="font-sans text-xs text-[#a0a5c0] leading-relaxed">${p.recording}</p>
+              </div>
+
+              <div class="space-y-3 pt-2">
+                <div class="p-3 rounded-lg bg-[#0b0c16] border border-[#2a2e4a] font-mono text-[11px] text-[#a0a5c0] overflow-x-auto">
+                  <span class="text-[#ff69b4]">"tags"</span>: [${p.deps.map(d => `<span class="text-[#50fa7b]">"${d}"</span>`).join(', ')}]
+                </div>
+                <a href="${p.repo}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 font-mono text-xs text-[#8be9fd] hover:text-[#ff69b4] transition">
+                  <span>Buka Demo / Proyek (${p.name})</span>
+                  <span>↗</span>
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Window: README Terminal -->
+          <div class="lg:col-span-7 terminal-card rounded-xl overflow-hidden">
+            <div class="bg-[#16192e] px-4 py-2.5 border-b border-[#2a2e4a] flex items-center justify-between font-mono text-xs">
+              <span class="text-[#a0a5c0]">terminal · ~/projects/${p.slug}</span>
+              <span class="text-[#a0a5c0] tracking-widest">− □ ×</span>
+            </div>
+            <div class="p-5 sm:p-6 space-y-4 text-xs sm:text-sm leading-relaxed text-[#a0a5c0]">
+              <div class="font-mono text-xs text-[#50fa7b]">
+                ~/projects/${p.slug} $ <span class="text-white">glow README.md</span>
+              </div>
+
+              <div class="space-y-2">
+                <h4 class="font-mono text-xs uppercase tracking-wider text-[#ff5f87] font-semibold">Why I built it (Latar Belakang)</h4>
+                ${p.why.map(para => `<p>${para}</p>`).join('')}
+              </div>
+
+              <div class="space-y-1.5">
+                <h4 class="font-mono text-xs uppercase tracking-wider text-[#ff5f87] font-semibold">What it does (Fitur Utama)</h4>
+                <ul class="list-disc list-inside space-y-1 text-white/90">
+                  ${p.what.map(item => `<li>${item}</li>`).join('')}
+                </ul>
+              </div>
+
+              <div class="space-y-1.5">
+                <h4 class="font-mono text-xs uppercase tracking-wider text-[#ff5f87] font-semibold">How it's built (Teknologi &amp; Implementasi)</h4>
+                <ul class="list-disc list-inside space-y-1 text-white/90">
+                  ${p.how.map(item => `<li>${item}</li>`).join('')}
+                </ul>
+              </div>
+
+              <div class="space-y-1.5">
+                <h4 class="font-mono text-xs uppercase tracking-wider text-[#ff5f87] font-semibold">Decisions worth noting (Nilai Bisnis)</h4>
+                <ul class="list-disc list-inside space-y-1 text-white/90">
+                  ${p.decisions.map(item => `<li>${item}</li>`).join('')}
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderExperience() {
+      const grid = document.getElementById('experience-grid');
+      grid.innerHTML = EXPERIENCES.map(exp => `
+        <div class="experience-card bg-[#121526] hover:bg-[#16192e] border border-[#2a2e4a] rounded-r-2xl p-5 sm:p-6 transition flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div class="space-y-1.5 max-w-3xl">
+            <div class="flex flex-wrap items-baseline gap-3">
+              <h3 class="text-lg sm:text-xl font-bold text-white">${exp.company}</h3>
+              <span class="font-mono text-xs text-[#8be9fd]">${exp.role}</span>
+            </div>
+            <p class="text-xs sm:text-sm text-[#a0a5c0] leading-relaxed">${exp.desc}</p>
+          </div>
+          <div class="font-mono text-xs text-[#ff5f87] font-semibold shrink-0">
+            ${exp.period}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // 7. MINI TERMINAL
+    function initMiniTerminal() {
+      const form = document.getElementById('mini-terminal-form');
+      const input = document.getElementById('mini-terminal-input');
+      const body = document.getElementById('mini-terminal-body');
+
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const raw = input.value.trim();
+        if (!raw) return;
+        input.value = '';
+        playClickTone(680, 0.04);
+
+        const cmd = raw.toLowerCase();
+        let reply = '';
+
+        if (cmd === 'clear') {
+          body.innerHTML = '';
+          return;
+        } else if (cmd === 'help') {
+          reply = 'Commands: fetch, ls, whoami, skills, open <ghifar|relasi|finance|outfit|kampung|fotocopy>, pet kai, room, clear';
+        } else if (cmd === 'ls') {
+          reply = 'ghifar-food/  relasi-crm/  financetrack/  outfitmatch-ai/  kampung-kita/  fotocopy-websites/  cv.pdf';
+        } else if (cmd === 'whoami') {
+          reply = 'Afghani Hilmi Al-Ghifari — Programmer × Digital Marketing (Cilegon, Banten, Indonesia)';
+        } else if (cmd === 'skills') {
+          reply = 'Web: HTML/CSS/JS, WordPress, Elementor, WooCommerce | App: Expo, Firebase, PWA | Marketing: Google Ads, GA4, GTM, Local SEO';
+        } else if (cmd === 'pet kai') {
+          triggerKaiPet();
+          reply = '🐾 Purr... Kai wagged his tail and gave you +100 luck!';
+        } else if (cmd === 'fetch') {
+          reply = 'afghani@desk | Programmer × Digital Marketing | S1 Sistem Informasi Amikom (3.63) | WA: +62 896-6782-2526';
+        } else if (cmd === 'room') {
+          setWorkspaceMode('room');
+          reply = 'Returned to 3D room.';
+        } else if (cmd.startsWith('open ')) {
+          const target = cmd.replace('open ', '').trim();
+          const found = PROJECTS.find(p => p.id === target || p.slug.includes(target) || p.name.toLowerCase().includes(target));
+          if (found) {
+            currentFilter = found.id;
+            selectedProjectId = found.id;
+            syncFilterButtons();
+            renderProjects();
+            renderProjectInspector();
+            reply = `glow ~/projects/${found.slug}/README.md`;
+          } else {
+            reply = `Unknown project "${target}". Try: open ghifar`;
+          }
+        } else {
+          reply = `command not found: ${raw} (type "help")`;
+        }
+
+        const entry = document.createElement('div');
+        entry.className = 'space-y-1';
+        entry.innerHTML = `
+          <div><span class="text-[#50fa7b]">afghani@desk</span> <span class="text-[#8be9fd]">~</span> $ ${raw.replace(/</g, '&lt;')}</div>
+          <div class="text-white/80 pl-2">${reply}</div>
+        `;
+        body.appendChild(entry);
+        body.scrollTop = body.scrollHeight;
+      });
+    }
+
+    // 8. AFGHANI'S AI CHATBOT (TRAINED ON 100% REAL DATA)
+    function answerAboutAfghani(question) {
+      const q = question.toLowerCase();
+      if (q.includes('proyek') || q.includes('project') || q.includes('ghifar') || q.includes('crm') || q.includes('finance') || q.includes('kampung') || q.includes('outfit') || q.includes('fotocopy')) {
+        return "Afghani memiliki 6 proyek utama: (1) Ghifar Food — aplikasi PWA operasional restoran & dapur, (2) Relasi CRM — ruang kerja penjualan B2B, pipeline, quotation & invoice, (3) FinanceTrack — aplikasi keuangan harian multi-dompet di Web & Android (Firebase), (4) OutfitMatch AI — demo fashion berbantuan AI (Expo), (5) Kampung Kita — game farming RPG berlatar Desa Sukamerta, dan (6) Fotocopy Websites — website bisnis WordPress/Elementor dengan Local SEO & Google Ads.";
+      }
+      if (q.includes('skill') || q.includes('teknologi') || q.includes('stack') || q.includes('marketing') || q.includes('ads') || q.includes('seo')) {
+        return "Sebagai Programmer × Digital Marketer, keahlian Afghani mencakup: Pengembangan Web (HTML, CSS, JavaScript, WordPress, Elementor, WooCommerce), Proyek Aplikasi (Expo, Web & Android, Firebase, Alur API, PWA), Marketing & Analytics (Google Ads, GA4, Search Console, Google Tag Manager, SEO Lokal), serta AI & Alur Produk (ChatGPT, prototipe AI, Canva, VS Code).";
+      }
+      if (q.includes('pengalaman') || q.includes('experience') || q.includes('kerja') || q.includes('aufa') || q.includes('kerjaan')) {
+        return "Pengalaman kerja Afghani: (1) Digital Marketing di PT Aufa Jaya Indonesia (Apr 2025 – Sekarang), (2) Administrasi Logistik di PT Multi Lintas Persada (Nov 2023 – Apr 2025), (3) HSE Officer di PT Suba Jaya Indonesia (Jul – Okt 2023), (4) Kepala Laboratorium Komputer di SMK Asyuhada Al-Khairiyah (Nov 2021 – Jul 2023), (5) Magang Web Developer di PT Tourezia Cakra Inspira (2020), dan (6) Student Staff IT Support di Universitas Amikom Yogyakarta (2020).";
+      }
+      if (q.includes('pendidikan') || q.includes('kuliah') || q.includes('amikom') || q.includes('sertifikat') || q.includes('sertifikasi') || q.includes('ipk')) {
+        return "Afghani adalah lulusan Sarjana Sistem Informasi (S.Kom) dari Universitas Amikom Yogyakarta (2016–2021) dengan IPK 3.63 (Skripsi: Membuat Toko Online Berbasis Android di Mitracom Cilegon). Ia juga mengantongi 6 sertifikasi dari Google/Coursera, IBM/Coursera, Sekolah Pintar, BNSP/KEMNAKER (Petugas K3 Umum), dan Amikom Yogyakarta.";
+      }
+      if (q.includes('kontak') || q.includes('contact') || q.includes('wa') || q.includes('whatsapp') || q.includes('email') || q.includes('lokasi')) {
+        return "Afghani berdomisili di Cilegon, Banten, Indonesia dan terbuka untuk peluang kerja maupun proyek freelance. Anda dapat menghubunginya melalui WhatsApp di +62 896-6782-2526 atau email afghani.9599@students.amikom.ac.id.";
+      }
+      if (q.includes('kai') || q.includes('cat') || q.includes('kucing')) {
+        return "Kai adalah kucing hitam penjaga ruang kerja 3D Afghani! Klik tombol 'Pet Kai' untuk melihatnya melompat senang di atas bean bag pink.";
+      }
+      return "Halo! Afghani Hilmi Al-Ghifari adalah seorang Programmer × Digital Marketing di Cilegon, Banten (Lulusan S1 Sistem Informasi Universitas Amikom Yogyakarta, IPK 3.63). Tanyakan kepada saya tentang 6 proyeknya (seperti Ghifar Food & Relasi CRM), pengalaman di PT Aufa Jaya Indonesia, layanan SEO/Google Ads, atau hubungi langsung via WhatsApp +62 896-6782-2526!";
+    }
+
+    function initAIChat() {
+      const form = document.getElementById('ai-chat-form');
+      const input = document.getElementById('ai-chat-input');
+      const messages = document.getElementById('ai-chat-messages');
+
+      const sendPrompt = (text) => {
+        if (!text.trim()) return;
+        playClickTone(600, 0.04);
+
+        const userBubble = document.createElement('div');
+        userBubble.className = 'bg-[#ff5f87]/20 border border-[#ff5f87]/40 rounded-xl p-3 text-white ml-8 text-right';
+        userBubble.textContent = text;
+        messages.appendChild(userBubble);
+
+        const botBubble = document.createElement('div');
+        botBubble.className = 'bg-[#16192e] border border-[#2a2e4a] rounded-xl p-3.5 text-white/90 mr-6 leading-relaxed';
+        botBubble.textContent = answerAboutAfghani(text);
+        messages.appendChild(botBubble);
+
+        messages.scrollTop = messages.scrollHeight;
+      };
+
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const val = input.value;
+        input.value = '';
+        sendPrompt(val);
+      });
+
+      document.querySelectorAll('.ai-chip').forEach(chip => {
+        chip.addEventListener('click', () => sendPrompt(chip.getAttribute('data-ask')));
+      });
+
+      const pillChat = document.getElementById('pill-about-chat');
+      const pillBio = document.getElementById('pill-about-bio');
+      const chatPanel = document.getElementById('about-chat-panel');
+      const bioPanel = document.getElementById('about-bio-panel');
+
+      pillChat.addEventListener('click', () => {
+        pillChat.className = 'px-4 py-1 rounded-full bg-[#ff5f87] text-[#0b0c16] font-semibold transition';
+        pillBio.className = 'px-4 py-1 rounded-full text-[#a0a5c0] hover:text-white transition';
+        chatPanel.classList.add('pink-glow');
+        bioPanel.classList.remove('pink-glow');
+      });
+      pillBio.addEventListener('click', () => {
+        pillBio.className = 'px-4 py-1 rounded-full bg-[#ff5f87] text-[#0b0c16] font-semibold transition';
+        pillChat.className = 'px-4 py-1 rounded-full text-[#a0a5c0] hover:text-white transition';
+        bioPanel.classList.add('pink-glow');
+        chatPanel.classList.remove('pink-glow');
+      });
+    }
+
+    // =========================================================================
+    // 9. ENHANCED 3D ROOM WITH ARTICULATED CHARACTERS & REAL DATA TEXTURES
+    // =========================================================================
+    let threeInitialized = false;
+    let scene, camera, renderer, roomGroup;
+    let targetYaw = -0.45, targetPitch = 0.25, currentYaw = -0.45, currentPitch = 0.25;
+    let camDistance = 7.6, targetDistance = 7.6;
+    let lookAtTarget = new THREE.Vector3(0, 1.45, -0.35);
+    let currentLookAt = new THREE.Vector3(0, 1.45, -0.35);
+    let currentStationIdx = 0;
+
+    let afghaniChar = null;
+    let kaiCat = null;
+    let aiDrone = null;
+    let steamParticles = [];
+    let roomParticles = null;
+    let afghaniWaveTimer = 0;
+    let kaiJumpTimer = 0;
+    let droneScanTimer = 0;
+    let kaiPurrCount = 0;
+
+    const STATIONS = [
+      {
+        num: '01 / 05',
+        tag: "00 // AFGHANI'S DESK · CILEGON, BANTEN",
+        title: 'Programmer × Digital Marketing',
+        body: 'Lulusan S1 Sistem Informasi Universitas Amikom Yogyakarta (IPK 3.63). Menggabungkan pengembangan aplikasi web/mobile dengan strategi SEO, Google Ads, dan Analytics.',
+        sec: 'projects',
+        yaw: -0.45, pitch: 0.25, dist: 7.6, look: [0, 1.45, -0.35]
+      },
+      {
+        num: '02 / 05',
+        tag: '01 // PROJECTS MONITOR (06 PROYEK)',
+        title: 'Ghifar Food, Relasi CRM, FinanceTrack & Lainnya',
+        body: '6 proyek unggulan: Ghifar Food (Restaurant OS), Relasi CRM (B2B Sales), FinanceTrack (Web & Android), OutfitMatch AI (Expo), Kampung Kita (Game RPG), dan Fotocopy Websites (WordPress + SEO).',
+        sec: 'projects',
+        yaw: 0.0, pitch: 0.12, dist: 3.5, look: [-0.25, 1.88, -1.55]
+      },
+      {
+        num: '03 / 05',
+        tag: '02 // EXPERIENCE & EDUCATION LAPTOP',
+        title: 'PT Aufa Jaya Indonesia & Univ. Amikom Yogyakarta',
+        body: 'Digital Marketing di PT Aufa Jaya Indonesia, Administrasi Logistik di PT Multi Lintas Persada, HSE Officer di PT Suba Jaya Indonesia, Kepala Lab Komputer di SMK Asyuhada Al-Khairiyah.',
+        sec: 'experience',
+        yaw: -0.28, pitch: 0.16, dist: 3.6, look: [0.95, 1.65, -1.35]
+      },
+      {
+        num: '04 / 05',
+        tag: '03 // ABOUT, SKILLS & KAI THE CAT',
+        title: 'Teknologi Membangun Produk. Marketing Membantu Orang Menemukannya.',
+        body: 'Web Dev (HTML, CSS, JS, WordPress, Elementor, WooCommerce), App (Expo, Firebase, PWA), dan Digital Marketing (Google Ads, GA4, Search Console, GTM, Local SEO).',
+        sec: 'about',
+        yaw: 0.65, pitch: 0.22, dist: 4.5, look: [2.2, 0.85, 0.55]
+      },
+      {
+        num: '05 / 05',
+        tag: '04 // NOTHING OS PHONE & WHATSAPP',
+        title: 'WhatsApp +62 896-6782-2526 · Cilegon, Banten',
+        body: 'Email: afghani.9599@students.amikom.ac.id · Terbuka untuk peluang kerja (Recruiter) maupun proyek pembuatan website, aplikasi, SEO & Google Ads.',
+        sec: 'contact',
+        yaw: 0.22, pitch: 0.28, dist: 3.3, look: [-1.15, 1.35, -0.95]
+      }
+    ];
+
+    function focusStation(idx) {
+      currentStationIdx = (idx + STATIONS.length) % STATIONS.length;
+      const st = STATIONS[currentStationIdx];
+      targetYaw = st.yaw;
+      targetPitch = st.pitch;
+      targetDistance = st.dist;
+      lookAtTarget.set(st.look[0], st.look[1], st.look[2]);
+
+      document.getElementById('cam-indicator').textContent = st.num;
+      document.getElementById('cam-desc').textContent = st.title;
+      document.getElementById('hud-tag').textContent = st.tag;
+      document.getElementById('hud-title').textContent = st.title;
+      document.getElementById('hud-body').textContent = st.body;
+      document.getElementById('hud-open-flat-sec').setAttribute('data-target-sec', st.sec);
+
+      document.querySelectorAll('.station-pill').forEach((pill, i) => {
+        pill.className = i === currentStationIdx
+          ? 'station-pill px-3 py-1 rounded-full bg-[#ff5f87] text-[#0b0c16] font-semibold transition'
+          : 'station-pill px-3 py-1 rounded-full text-[#a0a5c0] hover:text-white transition';
+      });
+      playClickTone(520 + currentStationIdx * 45, 0.05);
+    }
+
+    function triggerAfghaniWave() {
+      afghaniWaveTimer = 140;
+      playClickTone(660, 0.08);
+      setTimeout(() => playClickTone(880, 0.1), 90);
+      showCharacterSpeech('👨‍💻', 'Afghani: "Halo! Saya membangun solusi digital & membantu bisnis berkembang!"');
+    }
+
+    function triggerKaiPet() {
+      kaiJumpTimer = 110;
+      kaiPurrCount++;
+      const countEl = document.getElementById('kai-purr-count');
+      const statusEl = document.getElementById('flat-kai-status');
+      if (countEl) countEl.textContent = String(kaiPurrCount);
+      if (statusEl) statusEl.textContent = `Kai mendengkur senang! (Dielus ${kaiPurrCount}x — ekor bergoyang kencang)`;
+      playMeowSound();
+      showCharacterSpeech('🐈‍⬛', `Kai: "Meow! Purrrr... (+${kaiPurrCount * 10} semangat kerja)"`);
+    }
+
+    function triggerDroneScan() {
+      droneScanTimer = 120;
+      playClickTone(780, 0.06);
+      setTimeout(() => playClickTone(980, 0.09), 70);
+      showCharacterSpeech('🤖', 'afghani-1 Bot: "6 Proyek & Kampanye SEO/Google Ads terverifikasi optimal!"');
+    }
+
+    function createScreenTexture(title, subtitle, accentHex, lines) {
+      const c = document.createElement('canvas');
+      c.width = 512;
+      c.height = 320;
+      const ctx = c.getContext('2d');
+      ctx.fillStyle = '#0b0c16';
+      ctx.fillRect(0, 0, 512, 320);
+      ctx.strokeStyle = accentHex;
+      ctx.lineWidth = 4;
+      ctx.strokeRect(8, 8, 496, 304);
+
+      ctx.fillStyle = '#16192e';
+      ctx.fillRect(10, 10, 492, 36);
+      ctx.fillStyle = '#ff5f87';
+      ctx.beginPath(); ctx.arc(28, 28, 6, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#f1fa8c';
+      ctx.beginPath(); ctx.arc(48, 28, 6, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#50fa7b';
+      ctx.beginPath(); ctx.arc(68, 28, 6, 0, Math.PI * 2); ctx.fill();
+
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 22px monospace';
+      ctx.fillText(title, 24, 80);
+
+      ctx.fillStyle = accentHex;
+      ctx.font = '15px monospace';
+      ctx.fillText(subtitle, 24, 108);
+
+      ctx.fillStyle = '#a0a5c0';
+      ctx.font = '13px monospace';
+      lines.forEach((l, idx) => {
+        ctx.fillText(l, 24, 144 + idx * 26);
+      });
+      return new THREE.CanvasTexture(c);
+    }
+
+    function initThreeRoom() {
+      if (threeInitialized) return;
+      threeInitialized = true;
+
+      const container = document.getElementById('room-canvas-container');
+      const w = container.clientWidth || window.innerWidth;
+      const h = container.clientHeight || (window.innerHeight - 55);
+
+      scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x0b0c16);
+      scene.fog = new THREE.FogExp2(0x0b0c16, 0.04);
+
+      camera = new THREE.PerspectiveCamera(42, w / h, 0.1, 100);
+
+      renderer = new THREE.WebGLRenderer({ antialias: true });
+      renderer.setSize(w, h);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      container.appendChild(renderer.domElement);
+
+      scene.add(new THREE.AmbientLight(0x323960, 1.55));
+
+      const pinkLight = new THREE.PointLight(0xff5f87, 2.9, 11);
+      pinkLight.position.set(-1.5, 2.8, -1.2);
+      scene.add(pinkLight);
+
+      const cyanLight = new THREE.PointLight(0x8be9fd, 2.2, 9);
+      cyanLight.position.set(1.5, 2.4, -0.7);
+      scene.add(cyanLight);
+
+      roomGroup = new THREE.Group();
+      scene.add(roomGroup);
+
+      // Floor & Walls
+      const floorMat = new THREE.MeshStandardMaterial({ color: 0x0e1120, roughness: 0.85 });
+      const floor = new THREE.Mesh(new THREE.BoxGeometry(11, 0.2, 11), floorMat);
+      floor.position.set(0, -0.1, 0);
+      roomGroup.add(floor);
+
+      const wallMat = new THREE.MeshStandardMaterial({ color: 0x121526, roughness: 0.9 });
+      const backWall = new THREE.Mesh(new THREE.BoxGeometry(11, 6.2, 0.2), wallMat);
+      backWall.position.set(0, 3.0, -3.2);
+      roomGroup.add(backWall);
+
+      const leftWall = new THREE.Mesh(new THREE.BoxGeometry(0.2, 6.2, 11), wallMat);
+      leftWall.position.set(-5.4, 3.0, 0);
+      roomGroup.add(leftWall);
+
+      // Desk
+      const deskMat = new THREE.MeshStandardMaterial({ color: 0x1c1f33, roughness: 0.5 });
+      const deskTop = new THREE.Mesh(new THREE.BoxGeometry(4.2, 0.12, 1.85), deskMat);
+      deskTop.position.set(0, 1.25, -1.4);
+      roomGroup.add(deskTop);
+
+      const ledStrip = new THREE.Mesh(
+        new THREE.BoxGeometry(4.1, 0.04, 0.04),
+        new THREE.MeshBasicMaterial({ color: 0xff5f87 })
+      );
+      ledStrip.position.set(0, 1.32, -2.28);
+      roomGroup.add(ledStrip);
+
+      // Main Desktop Monitor (01 PROJECTS — Real 6 Projects)
+      const bezelMat = new THREE.MeshStandardMaterial({ color: 0x090a10, roughness: 0.3 });
+      const mainMon = new THREE.Mesh(new THREE.BoxGeometry(1.55, 0.92, 0.06), bezelMat);
+      mainMon.position.set(-0.25, 1.92, -1.68);
+      roomGroup.add(mainMon);
+
+      const projTex = createScreenTexture(
+        '01 // 06 PROYEK PILIHAN',
+        'afghani@cilegon ~/projects',
+        '#ff5f87',
+        [
+          '1. Ghifar Food (Restaurant OS PWA)',
+          '2. Relasi CRM (B2B Sales Workspace)',
+          '3. FinanceTrack (Web & Android)',
+          '4. OutfitMatch AI (Expo Fashion)',
+          '5. Kampung Kita & 6. Fotocopy Web'
+        ]
+      );
+      const mainScreen = new THREE.Mesh(new THREE.PlaneGeometry(1.45, 0.82), new THREE.MeshBasicMaterial({ map: projTex }));
+      mainScreen.position.set(-0.25, 1.92, -1.64);
+      roomGroup.add(mainScreen);
+
+      // Laptop on Right Side of Desk (02 EXPERIENCE — Real Experience)
+      const laptopBase = new THREE.Mesh(new THREE.BoxGeometry(0.85, 0.04, 0.58), bezelMat);
+      laptopBase.position.set(1.05, 1.33, -1.35);
+      laptopBase.rotation.y = -0.28;
+      roomGroup.add(laptopBase);
+
+      const laptopLid = new THREE.Mesh(new THREE.BoxGeometry(0.85, 0.56, 0.04), bezelMat);
+      laptopLid.position.set(1.12, 1.62, -1.58);
+      laptopLid.rotation.y = -0.28;
+      roomGroup.add(laptopLid);
+
+      const expTex = createScreenTexture(
+        '02 // PENGALAMAN & EDU',
+        'S1 Sistem Informasi Amikom (3.63)',
+        '#50fa7b',
+        [
+          '• PT Aufa Jaya Indonesia (Digital Mkt)',
+          '• PT Multi Lintas Persada (Logistik)',
+          '• PT Suba Jaya Indonesia (HSE)',
+          '• SMK Asyuhada (Kepala Lab Komputer)',
+          '• PT Tourezia & Univ. Amikom'
+        ]
+      );
+      const laptopScreen = new THREE.Mesh(new THREE.PlaneGeometry(0.78, 0.48), new THREE.MeshBasicMaterial({ map: expTex }));
+      laptopScreen.position.set(1.11, 1.62, -1.55);
+      laptopScreen.rotation.y = -0.28;
+      roomGroup.add(laptopScreen);
+
+      // Nothing OS Smartphone on Left of Desk (04 CONTACT — Real Contact)
+      const phoneTex = createScreenTexture(
+        'CILEGON',
+        'AFGHANI HILMI AL-GHIFARI',
+        '#8be9fd',
+        [
+          '[WA] +62 896-6782-2526',
+          '[Email] afghani.9599@students.amikom',
+          '[Role] Programmer x Digital Mkt',
+          '[Status] Open to Work & Projects'
+        ]
+      );
+      const phoneMesh = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.02, 0.52), new THREE.MeshBasicMaterial({ map: phoneTex }));
+      phoneMesh.position.set(-1.25, 1.32, -1.05);
+      phoneMesh.rotation.y = 0.25;
+      roomGroup.add(phoneMesh);
+
+      // Keyboard & Coffee Mug
+      const kb = new THREE.Mesh(new THREE.BoxGeometry(0.82, 0.04, 0.28), bezelMat);
+      kb.position.set(-0.25, 1.33, -1.05);
+      roomGroup.add(kb);
+
+      const mug = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.09, 0.08, 0.2, 16),
+        new THREE.MeshStandardMaterial({ color: 0xff5f87, roughness: 0.3 })
+      );
+      mug.position.set(-0.9, 1.4, -1.25);
+      roomGroup.add(mug);
+
+      for (let i = 0; i < 4; i++) {
+        const sp = new THREE.Mesh(
+          new THREE.SphereGeometry(0.025, 8, 8),
+          new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.35 })
+        );
+        sp.position.set(-0.9, 1.55 + i * 0.08, -1.25);
+        roomGroup.add(sp);
+        steamParticles.push({ mesh: sp, offset: i * 1.5 });
+      }
+
+      // CHARACTER 1: AFGHANI HILMI AL-GHIFARI
+      afghaniChar = new THREE.Group();
+      afghaniChar.position.set(-0.25, 0.0, -0.35);
+      roomGroup.add(afghaniChar);
+
+      const chairMat = new THREE.MeshStandardMaterial({ color: 0x151828, roughness: 0.5 });
+      const chairSeat = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.08, 0.65), chairMat);
+      chairSeat.position.set(0, 0.72, 0);
+      afghaniChar.add(chairSeat);
+
+      const chairBack = new THREE.Mesh(new THREE.BoxGeometry(0.68, 0.95, 0.08), chairMat);
+      chairBack.position.set(0, 1.22, 0.3);
+      afghaniChar.add(chairBack);
+
+      const hoodieMat = new THREE.MeshStandardMaterial({ color: 0x1e2238, roughness: 0.6 });
+      const torso = new THREE.Mesh(new THREE.BoxGeometry(0.52, 0.62, 0.32), hoodieMat);
+      torso.position.set(0, 1.12, 0.05);
+      afghaniChar.add(torso);
+
+      const headGroup = new THREE.Group();
+      headGroup.position.set(0, 1.58, 0.02);
+      afghaniChar.add(headGroup);
+      afghaniChar.userData.headGroup = headGroup;
+
+      const skinMat = new THREE.MeshStandardMaterial({ color: 0xe0b18c, roughness: 0.55 });
+      const headMesh = new THREE.Mesh(new THREE.BoxGeometry(0.34, 0.34, 0.34), skinMat);
+      headGroup.add(headMesh);
+
+      const hairMat = new THREE.MeshStandardMaterial({ color: 0x0d0f17, roughness: 0.7 });
+      const hairTop = new THREE.Mesh(new THREE.BoxGeometry(0.36, 0.12, 0.37), hairMat);
+      hairTop.position.set(0, 0.16, 0);
+      headGroup.add(hairTop);
+
+      const hpBand = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.05, 0.1), bezelMat);
+      hpBand.position.set(0, 0.21, 0);
+      headGroup.add(hpBand);
+
+      const hpEarMat = new THREE.MeshBasicMaterial({ color: 0xff5f87 });
+      const hpLeft = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 0.05, 16), hpEarMat);
+      hpLeft.rotation.z = Math.PI / 2;
+      hpLeft.position.set(-0.19, 0.02, 0);
+      headGroup.add(hpLeft);
+
+      const hpRight = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 0.05, 16), hpEarMat);
+      hpRight.rotation.z = Math.PI / 2;
+      hpRight.position.set(0.19, 0.02, 0);
+      headGroup.add(hpRight);
+
+      const glassMat = new THREE.MeshBasicMaterial({ color: 0x8be9fd });
+      const glasses = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.06, 0.02), glassMat);
+      glasses.position.set(0, 0.03, -0.175);
+      headGroup.add(glasses);
+
+      const leftArm = new THREE.Group();
+      leftArm.position.set(-0.3, 1.32, 0.02);
+      const leftArmMesh = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.14, 0.56), hoodieMat);
+      leftArmMesh.position.set(0, -0.04, -0.24);
+      leftArm.add(leftArmMesh);
+      afghaniChar.add(leftArm);
+      afghaniChar.userData.leftArm = leftArm;
+
+      const rightArm = new THREE.Group();
+      rightArm.position.set(0.3, 1.32, 0.02);
+      const rightArmMesh = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.14, 0.56), hoodieMat);
+      rightArmMesh.position.set(0, -0.04, -0.24);
+      rightArm.add(rightArmMesh);
+      afghaniChar.add(rightArm);
+      afghaniChar.userData.rightArm = rightArm;
+
+      // CHARACTER 2: KAI THE CAT
+      const beanBagMat = new THREE.MeshStandardMaterial({ color: 0xff5f87, roughness: 0.78 });
+      const beanBag = new THREE.Mesh(new THREE.SphereGeometry(0.88, 24, 18), beanBagMat);
+      beanBag.scale.set(1.15, 0.58, 1.15);
+      beanBag.position.set(2.2, 0.48, 0.55);
+      roomGroup.add(beanBag);
+
+      kaiCat = new THREE.Group();
+      kaiCat.position.set(2.2, 0.96, 0.55);
+      roomGroup.add(kaiCat);
+
+      const catMat = new THREE.MeshStandardMaterial({ color: 0x0b0c12, roughness: 0.55 });
+      const catBody = new THREE.Mesh(new THREE.SphereGeometry(0.28, 18, 18), catMat);
+      catBody.scale.set(1.1, 0.85, 1.35);
+      kaiCat.add(catBody);
+      kaiCat.userData.body = catBody;
+
+      const catHead = new THREE.Group();
+      catHead.position.set(0, 0.22, 0.26);
+      kaiCat.add(catHead);
+      kaiCat.userData.head = catHead;
+
+      const catHeadMesh = new THREE.Mesh(new THREE.SphereGeometry(0.2, 16, 16), catMat);
+      catHead.add(catHeadMesh);
+
+      const earGeo = new THREE.ConeGeometry(0.07, 0.16, 4);
+      const earLeft = new THREE.Mesh(earGeo, catMat);
+      earLeft.position.set(-0.11, 0.2, 0.02);
+      earLeft.rotation.z = 0.2;
+      catHead.add(earLeft);
+
+      const earRight = new THREE.Mesh(earGeo, catMat);
+      earRight.position.set(0.11, 0.2, 0.02);
+      earRight.rotation.z = -0.2;
+      catHead.add(earRight);
+
+      const eyeMat = new THREE.MeshBasicMaterial({ color: 0x50fa7b });
+      const eyeL = new THREE.Mesh(new THREE.SphereGeometry(0.028, 8, 8), eyeMat);
+      eyeL.position.set(-0.07, 0.04, 0.18);
+      catHead.add(eyeL);
+
+      const eyeR = new THREE.Mesh(new THREE.SphereGeometry(0.028, 8, 8), eyeMat);
+      eyeR.position.set(0.07, 0.04, 0.18);
+      catHead.add(eyeR);
+      kaiCat.userData.eyes = [eyeL, eyeR];
+
+      const tailPivot = new THREE.Group();
+      tailPivot.position.set(0, 0.05, -0.32);
+      const tailMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.025, 0.48, 10), catMat);
+      tailMesh.position.set(0, 0.18, -0.12);
+      tailMesh.rotation.x = -0.7;
+      tailPivot.add(tailMesh);
+      kaiCat.add(tailPivot);
+      kaiCat.userData.tail = tailPivot;
+
+      // CHARACTER 3: FLOATING HOLOGRAPHIC AI BOT
+      aiDrone = new THREE.Group();
+      aiDrone.position.set(-1.35, 2.35, -1.25);
+      roomGroup.add(aiDrone);
+
+      const droneCore = new THREE.Mesh(
+        new THREE.OctahedronGeometry(0.16, 1),
+        new THREE.MeshStandardMaterial({ color: 0x8be9fd, emissive: 0x164e63, roughness: 0.2 })
+      );
+      aiDrone.add(droneCore);
+
+      const droneRing = new THREE.Mesh(
+        new THREE.TorusGeometry(0.26, 0.015, 12, 32),
+        new THREE.MeshBasicMaterial({ color: 0xff5f87 })
+      );
+      droneRing.rotation.x = Math.PI / 2;
+      aiDrone.add(droneRing);
+      aiDrone.userData.ring = droneRing;
+
+      // Ambient Particles
+      const partGeo = new THREE.BufferGeometry();
+      const partCount = 70;
+      const posArr = new Float32Array(partCount * 3);
+      for (let i = 0; i < partCount * 3; i += 3) {
+        posArr[i] = (Math.random() - 0.5) * 8;
+        posArr[i + 1] = Math.random() * 4 + 0.3;
+        posArr[i + 2] = (Math.random() - 0.5) * 6;
+      }
+      partGeo.setAttribute('position', new THREE.BufferAttribute(posArr, 3));
+      const partMat = new THREE.PointsMaterial({ color: 0xff69b4, size: 0.045, transparent: true, opacity: 0.65 });
+      roomParticles = new THREE.Points(partGeo, partMat);
+      roomGroup.add(roomParticles);
+
+      let isDragging = false;
+      let prevX = 0, prevY = 0;
+      container.addEventListener('pointerdown', (e) => {
+        isDragging = true;
+        prevX = e.clientX;
+        prevY = e.clientY;
+      });
+      window.addEventListener('pointerup', () => { isDragging = false; });
+      window.addEventListener('pointermove', (e) => {
+        if (!isDragging || currentMode !== 'room') return;
+        const dx = e.clientX - prevX;
+        const dy = e.clientY - prevY;
+        prevX = e.clientX;
+        prevY = e.clientY;
+        targetYaw -= dx * 0.006;
+        targetPitch = Math.max(0.05, Math.min(0.85, targetPitch + dy * 0.005));
+      });
+
+      let clockTick = 0;
+      function animateRoom() {
+        requestAnimationFrame(animateRoom);
+        if (currentMode !== 'room') return;
+        clockTick += 0.05;
+
+        currentYaw += (targetYaw - currentYaw) * 0.08;
+        currentPitch += (targetPitch - currentPitch) * 0.08;
+        camDistance += (targetDistance - camDistance) * 0.08;
+        currentLookAt.lerp(lookAtTarget, 0.08);
+
+        const cx = currentLookAt.x + camDistance * Math.sin(currentYaw) * Math.cos(currentPitch);
+        const cy = currentLookAt.y + camDistance * Math.sin(currentPitch);
+        const cz = currentLookAt.z + camDistance * Math.cos(currentYaw) * Math.cos(currentPitch);
+        camera.position.set(cx, cy, cz);
+        camera.lookAt(currentLookAt);
+
+        if (afghaniChar) {
+          const hg = afghaniChar.userData.headGroup;
+          const la = afghaniChar.userData.leftArm;
+          const ra = afghaniChar.userData.rightArm;
+          const speedMult = afghaniWaveTimer > 0 ? 2.6 : 1.0;
+
+          if (afghaniWaveTimer > 0) {
+            afghaniWaveTimer--;
+            hg.rotation.y = Math.sin(clockTick * 2.5) * 0.35;
+            hg.rotation.x = -0.08;
+            ra.rotation.x = -0.85 + Math.sin(clockTick * 6) * 0.35;
+            la.rotation.x = Math.sin(clockTick * 5 * speedMult) * 0.14;
+          } else {
+            hg.rotation.y = Math.sin(clockTick * 0.45) * 0.22;
+            hg.rotation.x = Math.sin(clockTick * 1.2) * 0.05;
+            la.rotation.x = Math.sin(clockTick * 3.8) * 0.09;
+            ra.rotation.x = Math.cos(clockTick * 3.8) * 0.09;
+          }
+        }
+
+        if (kaiCat) {
+          const tail = kaiCat.userData.tail;
+          const body = kaiCat.userData.body;
+          const eyes = kaiCat.userData.eyes;
+
+          if (kaiJumpTimer > 0) {
+            kaiJumpTimer--;
+            kaiCat.position.y = 0.96 + Math.abs(Math.sin(clockTick * 3.5)) * 0.28;
+            tail.rotation.z = Math.sin(clockTick * 6.5) * 0.65;
+          } else {
+            kaiCat.position.y = 0.96;
+            tail.rotation.z = Math.sin(clockTick * 1.8) * 0.28;
+          }
+          const breath = 0.85 + Math.sin(clockTick * 1.5) * 0.04;
+          body.scale.set(1.1, breath, 1.35);
+
+          const blink = (Math.sin(clockTick * 0.7) > 0.96) ? 0.15 : 1.0;
+          eyes.forEach(e => { e.scale.y = blink; });
+        }
+
+        if (aiDrone) {
+          const ring = aiDrone.userData.ring;
+          if (droneScanTimer > 0) {
+            droneScanTimer--;
+            aiDrone.position.y = 2.35 + Math.sin(clockTick * 4) * 0.22;
+            aiDrone.rotation.y += 0.14;
+            ring.rotation.z += 0.18;
+          } else {
+            aiDrone.position.y = 2.35 + Math.sin(clockTick * 1.4) * 0.1;
+            aiDrone.rotation.y += 0.03;
+            ring.rotation.z += 0.04;
+          }
+        }
+
+        steamParticles.forEach(sp => {
+          const cycle = ((clockTick * 0.4 + sp.offset) % 1.0);
+          sp.mesh.position.y = 1.52 + cycle * 0.38;
+          sp.mesh.material.opacity = (1.0 - cycle) * 0.4;
+        });
+
+        if (roomParticles) {
+          roomParticles.rotation.y = clockTick * 0.02;
+        }
+
+        renderer.render(scene, camera);
+      }
+      animateRoom();
+    }
+
+    function onRoomResize() {
+      if (!renderer || !camera) return;
+      const container = document.getElementById('room-canvas-container');
+      const w = container.clientWidth || window.innerWidth;
+      const h = container.clientHeight || (window.innerHeight - 55);
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+      renderer.setSize(w, h);
+    }
+    window.addEventListener('resize', onRoomResize);
+
+    // 10. INITIALIZE ALL EVENT LISTENERS
+    window.addEventListener('DOMContentLoaded', () => {
+      initBootSequence();
+      renderProjects();
+      renderProjectInspector();
+      renderExperience();
+      initMiniTerminal();
+      initAIChat();
+
+      // Clocks
+      const updateClocks = () => {
+        const now = new Date();
+        const hhmm = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+        const dayStr = now.toLocaleDateString('en-US', { weekday: 'short', day: '2-digit', month: 'short' }).toUpperCase();
+        const liveEl = document.getElementById('live-clock');
+        const contactEl = document.getElementById('contact-clock-display');
+        const pixelEl = document.getElementById('phone-pixel-clock');
+        if (liveEl) liveEl.textContent = `${dayStr} · ${hhmm}`;
+        if (contactEl) contactEl.textContent = `${dayStr} · CILEGON, BANTEN`;
+        if (pixelEl) pixelEl.textContent = hhmm;
+      };
+      updateClocks();
+      setInterval(updateClocks, 10000);
+
+      // Mode Toggles
+      document.getElementById('btn-toggle-mode').addEventListener('click', () => {
+        setWorkspaceMode(currentMode === 'room' ? 'flat' : 'room');
+      });
+      document.getElementById('btn-room-to-flat').addEventListener('click', () => setWorkspaceMode('flat'));
+      document.getElementById('hero-open-3d').addEventListener('click', () => setWorkspaceMode('room'));
+      document.getElementById('btn-room-inspect-projects').addEventListener('click', () => focusStation(1));
+
+      document.getElementById('hud-open-flat-sec').addEventListener('click', (e) => {
+        const sec = e.currentTarget.getAttribute('data-target-sec') || 'projects';
+        setWorkspaceMode('flat');
+        const targetEl = document.getElementById(`sec-${sec}`);
+        if (targetEl) targetEl.scrollIntoView({ behavior: 'smooth' });
+      });
+
+      // Character Action Buttons
+      document.getElementById('btn-char-wave').addEventListener('click', () => {
+        focusStation(0);
+        triggerAfghaniWave();
+      });
+      document.getElementById('btn-char-kai').addEventListener('click', () => {
+        focusStation(3);
+        triggerKaiPet();
+      });
+      document.getElementById('btn-char-drone').addEventListener('click', () => {
+        triggerDroneScan();
+      });
+      document.getElementById('btn-flat-pet-kai').addEventListener('click', () => {
+        triggerKaiPet();
+      });
+
+      // Sound Toggle
+      document.getElementById('btn-sound-toggle').addEventListener('click', () => {
+        soundEnabled = !soundEnabled;
+        updateSoundButtonUI();
+        if (soundEnabled) playClickTone(660, 0.07);
+      });
+
+      // Top Navigation Bar
+      const stationMap = { projects: 1, experience: 2, about: 3, contact: 4 };
+      document.querySelectorAll('.nav-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+          const target = tab.getAttribute('data-nav');
+          document.querySelectorAll('.nav-tab').forEach(t => {
+            t.className = 'nav-tab px-3 py-1.5 rounded-full transition text-[#a0a5c0] hover:text-white border border-transparent';
+          });
+          tab.className = 'nav-tab px-3 py-1.5 rounded-full transition bg-[#ff5f87]/15 text-white border border-[#ff5f87]/50';
+
+          if (currentMode === 'room') {
+            focusStation(stationMap[target] || 0);
+          } else {
+            const sec = document.getElementById(`sec-${target}`);
+            if (sec) sec.scrollIntoView({ behavior: 'smooth' });
+          }
+          playClickTone(560, 0.04);
+        });
+      });
+
+      // Project Filter Pills
+      document.querySelectorAll('.proj-filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const proj = btn.getAttribute('data-proj');
+          currentFilter = proj;
+          if (proj !== 'all') selectedProjectId = proj;
+          syncFilterButtons();
+          renderProjects();
+          renderProjectInspector();
+          playClickTone(610, 0.04);
+        });
+      });
+
+      // Inline About Project Links
+      document.querySelectorAll('.inline-proj-link').forEach(link => {
+        link.addEventListener('click', () => {
+          selectedProjectId = link.getAttribute('data-open-proj');
+          currentFilter = selectedProjectId;
+          syncFilterButtons();
+          renderProjects();
+          renderProjectInspector();
+          document.getElementById('sec-projects').scrollIntoView({ behavior: 'smooth' });
+        });
+      });
+
+      // 3D Station Controls
+      document.getElementById('cam-prev').addEventListener('click', () => focusStation(currentStationIdx - 1));
+      document.getElementById('cam-next').addEventListener('click', () => focusStation(currentStationIdx + 1));
+      document.querySelectorAll('.station-btn, .station-pill').forEach(btn => {
+        btn.addEventListener('click', () => focusStation(parseInt(btn.getAttribute('data-station'), 10)));
+      });
+
+      // Hero Ask AI Button
+      document.getElementById('hero-ask-ai').addEventListener('click', () => {
+        document.getElementById('sec-about').scrollIntoView({ behavior: 'smooth' });
+        document.getElementById('ai-chat-input').focus();
+      });
+
+      // Awwwards Edge Ribbon
+      document.getElementById('awwwards-edge-badge').addEventListener('click', (e) => {
+        e.preventDefault();
+        setWorkspaceMode('flat');
+        document.getElementById('sec-contact').scrollIntoView({ behavior: 'smooth' });
+      });
+
+      // Inquiry Form Mode Toggle ("Saya Recruiter" / "Saya Punya Proyek")
+      let inquiryRole = 'Saya Recruiter';
+      const btnRecruiter = document.getElementById('btn-mode-recruiter');
+      const btnProject = document.getElementById('btn-mode-project');
+      btnRecruiter.addEventListener('click', () => {
+        inquiryRole = 'Saya Recruiter';
+        btnRecruiter.className = 'px-3 py-1 rounded-full bg-[#ff5f87] text-[#0b0c16] font-semibold transition';
+        btnProject.className = 'px-3 py-1 rounded-full text-[#a0a5c0] hover:text-white transition';
+      });
+      btnProject.addEventListener('click', () => {
+        inquiryRole = 'Saya Punya Proyek';
+        btnProject.className = 'px-3 py-1 rounded-full bg-[#ff5f87] text-[#0b0c16] font-semibold transition';
+        btnRecruiter.className = 'px-3 py-1 rounded-full text-[#a0a5c0] hover:text-white transition';
+      });
+
+      document.getElementById('contact-inquiry-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const name = document.getElementById('inq-name').value.trim();
+        const comp = document.getElementById('inq-company').value.trim();
+        const msg = document.getElementById('inq-message').value.trim();
+        const text = `Halo Afghani, [${inquiryRole}] Nama: ${name}${comp ? ' (' + comp + ')' : ''}. Pesan: ${msg}`;
+        const waUrl = `https://wa.me/6289667822526?text=${encodeURIComponent(text)}`;
+        window.open(waUrl, '_blank', 'noopener,noreferrer');
+        document.getElementById('inq-feedback').textContent = '✓ Membuka WhatsApp (+62 896-6782-2526)...';
+      });
+
+      // CV Modal Controls
+      const cvModal = document.getElementById('cv-modal');
+      const openCvModal = () => {
+        cvModal.classList.remove('hidden');
+        cvModal.classList.add('flex');
+        playClickTone(640, 0.05);
+      };
+      const closeCvModal = () => {
+        cvModal.classList.add('hidden');
+        cvModal.classList.remove('flex');
+      };
+      document.getElementById('hero-open-cv').addEventListener('click', openCvModal);
+      document.getElementById('btn-exp-cv').addEventListener('click', openCvModal);
+      document.getElementById('btn-contact-cv').addEventListener('click', openCvModal);
+      document.getElementById('btn-close-cv').addEventListener('click', closeCvModal);
+
+      document.getElementById('btn-download-txt-cv').addEventListener('click', () => {
+        const resumeText = [
+          "AFGHANI HILMI AL-GHIFARI — PROGRAMMER × DIGITAL MARKETING",
+          "Lokasi: Cilegon, Banten, Indonesia",
+          "Email: afghani.9599@students.amikom.ac.id | WhatsApp: +62 896-6782-2526",
+          "Website: https://afghani-hilmi.ptajitt15.chatgpt.site/",
+          "",
+          "RINGKASAN",
+          "Lulusan S1 Sistem Informasi dari Universitas Amikom Yogyakarta (IPK 3.63). Pengalaman mencakup pengembangan web, IT support, operasional laboratorium komputer, dan digital marketing di PT Aufa Jaya Indonesia.",
+          "",
+          "PENGALAMAN KERJA",
+          "- PT Aufa Jaya Indonesia | Digital Marketing (Apr 2025 – Sekarang)",
+          "- PT Multi Lintas Persada | Administrasi Logistik (Nov 2023 – Apr 2025)",
+          "- PT Suba Jaya Indonesia | HSE Officer (Jul 2023 – Okt 2023)",
+          "- SMK Asyuhada Al-Khairiyah | Kepala Laboratorium Komputer (Nov 2021 – Jul 2023)",
+          "- PT Tourezia Cakra Inspira | Magang Web Developer (10 Jun 2020 – 10 Sep 2020)",
+          "- Universitas Amikom Yogyakarta | Student Staff — IT Support (30 Jan 2020 – 25 Apr 2020)",
+          "",
+          "PROYEK (06 PROYEK)",
+          "1. Ghifar Food — Aplikasi Bisnis / Restaurant OS PWA",
+          "2. Relasi CRM — Ruang Kerja Penjualan B2B",
+          "3. FinanceTrack — Aplikasi Keuangan Harian Web & Android (Firebase)",
+          "4. OutfitMatch AI — Fashion dengan Bantuan AI (Expo)",
+          "5. Kampung Kita — Game Farming & Kehidupan Desa Sukamerta (MVP)",
+          "6. Fotocopy Websites — Pengembangan Web WordPress/Elementor + Local SEO & Google Ads",
+          "",
+          "PENDIDIKAN & SERTIFIKASI",
+          "- S1 Sistem Informasi, Universitas Amikom Yogyakarta (2016–2021), IPK 3.63",
+          "- Technical Support Fundamentals (Google / Coursera, 30 May 2023)",
+          "- Introduction to Technical Support (IBM / Coursera, 5 June 2023)",
+          "- New Digital Marketing & Internet Marketing Strategi (Sekolah Pintar, 15 March 2021)",
+          "- Membuat Web E-Commerce (Sekolah Pintar, 18 March 2021)",
+          "- Petugas K3 Umum (BNSP / KEMNAKER, 10 July 2023)",
+          "- Student Staff — IT Support (Universitas Amikom Yogyakarta, 2020)"
+        ].join("\n");
+        const blob = new Blob([resumeText], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'AFGHANI-HILMI-AL-GHIFARI-Resume.txt';
+        a.click();
+        URL.revokeObjectURL(url);
+      });
+
+      // Copy Email
+      document.getElementById('btn-copy-email').addEventListener('click', () => {
+        const email = 'afghani.9599@students.amikom.ac.id';
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(email).catch(() => {});
+        }
+        const badge = document.getElementById('copy-email-badge');
+        badge.textContent = 'copied!';
+        badge.className = 'px-2.5 py-1 rounded-full bg-[#50fa7b]/20 text-[#50fa7b] text-[10px] shrink-0';
+        playClickTone(740, 0.06);
+        setTimeout(() => {
+          badge.textContent = 'copy';
+          badge.className = 'px-2.5 py-1 rounded-full bg-[#16192e] text-[#a0a5c0] text-[10px] shrink-0';
+        }, 2000);
+      });
+
+      // Play Quartz Synth Preview + Equalizer Animation
+      const playQuartzBtn = document.getElementById('btn-play-quartz');
+      const eqEl = document.getElementById('spotify-eq');
+      const vinylEl = document.getElementById('vinyl-disc');
+      playQuartzBtn.addEventListener('click', () => {
+        soundEnabled = true;
+        updateSoundButtonUI();
+        ensureAudio();
+        if (synthLoopInterval) {
+          clearInterval(synthLoopInterval);
+          synthLoopInterval = null;
+          playQuartzBtn.textContent = '▶ Play Synth Preview';
+          if (eqEl) eqEl.classList.remove('eq-playing');
+          if (vinylEl) vinylEl.classList.remove('animate-spin');
+          return;
+        }
+        playQuartzBtn.textContent = '⏹ Stop Synth Preview';
+        if (eqEl) eqEl.classList.add('eq-playing');
+        if (vinylEl) vinylEl.classList.add('animate-spin');
+        const notes = [261.63, 329.63, 392.00, 523.25, 392.00, 329.63];
+        let step = 0;
+        synthLoopInterval = setInterval(() => {
+          playClickTone(notes[step % notes.length], 0.14);
+          step++;
+        }, 220);
+      });
+    });
+  </script>
+</body>
+</html>
